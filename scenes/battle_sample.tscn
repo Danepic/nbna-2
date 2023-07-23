@@ -22,6 +22,10 @@ data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0
 texture = ExtResource("1_cxcxb")
 script = ExtResource("2_cns2q")
 
+[node name="sprite2" type="Sprite3D" parent="."]
+texture = ExtResource("1_cxcxb")
+script = ExtResource("2_cns2q")
+
 [node name="camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.927836, 0.372988, 0, -0.372988, 0.927836, -0.003, -1.40255, 3.664)
 projection = 1

@@ -70,7 +70,7 @@ _data = {
 
 [node name="player" type="CharacterBody3D"]
 script = ExtResource("1_tlqyk")
-dataFile = "res://chars/naruto/ns-oodama-rasengan/data.html"
+dataFile = "res://chars/naruto/ns-oodama-rasengan/obj.dat"
 spritePath = "res://chars/naruto/ns-oodama-rasengan/sprites"
 
 [node name="sprite" type="Sprite3D" parent="."]

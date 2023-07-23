@@ -1,7 +1,7 @@
-type: value="character"
+type: value="CHARACTER"
     header: name="Naruto Uzumaki (Oodama Rasengan)" start_hp="1075" start_mp="500"
     stats: aggressive="6" technique="6" intelligent="8" speed="7" resistance="8" stamina="10"
-    sprite: 1="2048x8" 2="2048" 3="2048x8" 4="2048x8" 5="2048x8" 6="2048x8" 7="2048x8" 8="2048x8"
+    sprite: 1="2048x8" 2="2048x8" 3="2048x8" 4="2048x8" 5="2048x8" 6="2048x8" 7="2048x8" 8="2048x8"
 
     frame: id="0" name="standing" state="NORMAL" wait="2,5"
     img: pic="0" x="0" y="0"
