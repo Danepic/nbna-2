@@ -8,4 +8,12 @@ public class SpriteAtlasEntity
     public int quantityOfSprites;
 
     public string fileName;
+
+    public int textureIndex;
+
+    public int pixelSize;
+
+    public int quantityPerRowAndColumn;
+
+    public int spriteSize;
 }

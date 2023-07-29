@@ -10,10 +10,13 @@ public partial class ObjDataReader : Node
 	private string dataFile;
 
 	private ObjEntity objEntity;
+	private FrameEntity currentFrame;
 
 	[Export(PropertyHint.Dir)]
 	private string spritePath;
-	private Texture2D[] sprites;
+	private Dictionary<int, Dictionary<int, Rect2>> spritePosition;
+
+	private Sprite3D sprite3D;
 
 	public override void _EnterTree()
 	{
@@ -21,12 +24,13 @@ public partial class ObjDataReader : Node
 		this.objEntity.sprites = new();
 		this.objEntity.header = new();
 		this.objEntity.stats = new();
+		this.objEntity.frames = new();
 
 		using DirAccess spriteDir = DirAccess.Open(spritePath);
 
 		if (spriteDir != null)
 		{
-			int numberOfSprite = 1;
+			int numberOfSprite = 0;
 			spriteDir.ListDirBegin();
 			string fileName = spriteDir.GetNext();
 			while (fileName != "")
@@ -36,8 +40,10 @@ public partial class ObjDataReader : Node
 					SpriteAtlasEntity spriteAtlas = new();
 					spriteAtlas.sprite = GD.Load<Texture2D>(spritePath + "/" + fileName);
 					spriteAtlas.fileName = fileName;
+					spriteAtlas.textureIndex = numberOfSprite;
 
 					objEntity.sprites.Add(numberOfSprite, spriteAtlas);
+					numberOfSprite++;
 				}
 				fileName = spriteDir.GetNext();
 			}
@@ -46,97 +52,292 @@ public partial class ObjDataReader : Node
 		FileAccess dataFileAccess = Open(dataFile, ModeFlags.Read);
 		string[] dataContentLines = dataFileAccess.GetAsText().Split("\n");
 
+		FrameEntity currentFrameToMap = null;
 		foreach (string line in dataContentLines)
 		{
-			if (line.StartsWith("type"))
+			string trimLine = line.Trim();
+			if (trimLine.StartsWith("type"))
 			{
-				string type = this.GetValueFromKey(line, "type", "value");
+				string type = this.GetValueFromKey(trimLine, "type", "value");
 				if (type != null)
 					objEntity.type = Enum.Parse<ObjTypeEnum>(type);
+
+				continue;
 			}
 
-			if (line.StartsWith("header"))
+			if (trimLine.StartsWith("header"))
 			{
-				string name = this.GetValueFromKey(line, "header", "name");
+				string name = this.GetValueFromKey(trimLine, "header", "name");
 				if (name != null)
 					objEntity.header.name = name;
 
-				string startHp = this.GetValueFromKey(line, "header", "startHp");
+				string startHp = this.GetValueFromKey(trimLine, "header", "startHp");
 				if (startHp != null)
 					objEntity.header.startHp = int.Parse(startHp);
 
-				string startMp = this.GetValueFromKey(line, "header", "startMp");
+				string startMp = this.GetValueFromKey(trimLine, "header", "startMp");
 				if (startMp != null)
 					objEntity.header.startMp = int.Parse(startMp);
+
+				continue;
 			}
 
-			if (line.StartsWith("stats"))
+			if (trimLine.StartsWith("stats"))
 			{
-				string aggressive = this.GetValueFromKey(line, "stats", "aggressive");
+				string aggressive = this.GetValueFromKey(trimLine, "stats", "aggressive");
 				if (aggressive != null)
 					objEntity.stats.aggressive = int.Parse(aggressive);
 
-				string technique = this.GetValueFromKey(line, "stats", "technique");
+				string technique = this.GetValueFromKey(trimLine, "stats", "technique");
 				if (technique != null)
 					objEntity.stats.technique = int.Parse(technique);
 
-				string intelligent = this.GetValueFromKey(line, "stats", "intelligent");
+				string intelligent = this.GetValueFromKey(trimLine, "stats", "intelligent");
 				if (intelligent != null)
 					objEntity.stats.intelligent = int.Parse(intelligent);
 
-				string speed = this.GetValueFromKey(line, "stats", "speed");
+				string speed = this.GetValueFromKey(trimLine, "stats", "speed");
 				if (speed != null)
 					objEntity.stats.speed = int.Parse(speed);
 
-				string resistance = this.GetValueFromKey(line, "stats", "resistance");
+				string resistance = this.GetValueFromKey(trimLine, "stats", "resistance");
 				if (resistance != null)
 					objEntity.stats.resistance = int.Parse(resistance);
 
-				string stamina = this.GetValueFromKey(line, "stats", "stamina");
+				string stamina = this.GetValueFromKey(trimLine, "stats", "stamina");
 				if (stamina != null)
 					objEntity.stats.stamina = int.Parse(stamina);
+
+				continue;
 			}
 
-			if (line.StartsWith("sprite"))
+			if (trimLine.StartsWith("sprite"))
 			{
-				SpriteDimensionEntity spriteDimension = this.GetSpriteDimensionFromKey(line, "sprite", "1");
-				if (spriteDimension != null)
-					objEntity.sprites[1].quantityOfSprites = (spriteDimension.pixelSize * spriteDimension.pixelSize) / (spriteDimension.pixelSize / spriteDimension.quantityPerRowAndColumn) * 256;
+				SpriteAtlasEntity first = this.GetSpriteAtlasFromKey(trimLine, "sprite", "1");
+				if (first != null)
+					objEntity.sprites[0] = first;
 
-				string second = this.GetValueFromKey(line, "stats", "technique");
-				if (technique != null)
-					objEntity.stats.technique = int.Parse(technique);
+				SpriteAtlasEntity second = this.GetSpriteAtlasFromKey(trimLine, "sprite", "2");
+				if (second != null)
+					objEntity.sprites[1] = second;
 
-				string third = this.GetValueFromKey(line, "stats", "intelligent");
-				if (intelligent != null)
-					objEntity.stats.intelligent = int.Parse(intelligent);
+				SpriteAtlasEntity third = this.GetSpriteAtlasFromKey(trimLine, "sprite", "3");
+				if (third != null)
+					objEntity.sprites[2] = third;
 
-				string fourth = this.GetValueFromKey(line, "stats", "speed");
-				if (speed != null)
-					objEntity.stats.speed = int.Parse(speed);
+				SpriteAtlasEntity fourth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "4");
+				if (fourth != null)
+					objEntity.sprites[3] = fourth;
 
-				string fifth = this.GetValueFromKey(line, "stats", "resistance");
-				if (resistance != null)
-					objEntity.stats.resistance = int.Parse(resistance);
+				SpriteAtlasEntity fifth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "5");
+				if (fifth != null)
+					objEntity.sprites[4] = fifth;
 
-				string sixth = this.GetValueFromKey(line, "stats", "stamina");
-				if (stamina != null)
-					objEntity.stats.stamina = int.Parse(stamina);
+				SpriteAtlasEntity sixth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "6");
+				if (sixth != null)
+					objEntity.sprites[5] = sixth;
+
+				SpriteAtlasEntity seventh = this.GetSpriteAtlasFromKey(trimLine, "sprite", "7");
+				if (seventh != null)
+					objEntity.sprites[6] = seventh;
+
+				SpriteAtlasEntity eighth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "8");
+				if (eighth != null)
+					objEntity.sprites[7] = eighth;
+
+				continue;
 			}
-		}
 
-		foreach (Texture2D sprite in sprites)
-		{
-			GD.Print(sprite.GetHeight() + " - " + sprite.GetWidth());
+			foreach (KeyValuePair<int, SpriteAtlasEntity> spriteAtlasMap in objEntity.sprites)
+			{
+				Dictionary<int, Rect2> position = new();
+				int x = 0;
+				int y = 0;
+				int w = spriteAtlasMap.Value.spriteSize;
+				int h = spriteAtlasMap.Value.spriteSize;
+
+				int index = 0;
+				for (int y_row = 0; y_row < spriteAtlasMap.Value.quantityPerRowAndColumn; y_row++)
+				{
+					for (int x_row = 0; x_row < spriteAtlasMap.Value.quantityPerRowAndColumn; x_row++)
+					{
+						Rect2 rect2 = new Rect2(new Vector2(x, y), new Vector2(w, h));
+						position.Add(index, rect2);
+
+						x += spriteAtlasMap.Value.spriteSize;
+						index++;
+					}
+
+					x = 0;
+					y += spriteAtlasMap.Value.spriteSize;
+					index++;
+				}
+
+				spritePosition.Add(spriteAtlasMap.Value.textureIndex, position);
+			}
+
+			GD.Print(spritePosition.Count);
+			foreach (KeyValuePair<int, Dictionary<int, Rect2>> spriteAtlasMap in spritePosition)
+			{
+				foreach (KeyValuePair<int, Rect2> rectMap in spriteAtlasMap.Value)
+				{
+					GD.Print($"{spriteAtlasMap.Key} - {rectMap.Key} - {rectMap.Value.Position.X}:{rectMap.Value.Position.Y}:{rectMap.Value.Size.X}:{rectMap.Value.Size.Y}");
+				}
+			}
+
+			if (trimLine.StartsWith("frame"))
+			{
+				currentFrameToMap = new();
+
+				string id = this.GetValueFromKey(trimLine, "frame", "id");
+				if (id != null)
+					currentFrameToMap.id = int.Parse(id);
+
+				string name = this.GetValueFromKey(trimLine, "frame", "name");
+				if (name != null)
+					currentFrameToMap.name = name;
+
+				string state = this.GetValueFromKey(trimLine, "frame", "state");
+				if (state != null)
+					Enum.TryParse<StateFrameEnum>(state, true, out currentFrameToMap.state);
+
+				string wait = this.GetValueFromKey(trimLine, "frame", "wait");
+				if (wait != null)
+					currentFrameToMap.wait = float.Parse(wait);
+
+				continue;
+			}
+
+			if (trimLine.StartsWith("img"))
+			{
+				string pic = this.GetValueFromKey(trimLine, "img", "pic");
+				if (pic != null)
+					currentFrameToMap.pic = int.Parse(pic);
+
+				string x = this.GetValueFromKey(trimLine, "img", "x");
+				if (x != null)
+					currentFrameToMap.x_offset = float.Parse(x);
+
+				string y = this.GetValueFromKey(trimLine, "img", "y");
+				if (y != null)
+					currentFrameToMap.y_offset = float.Parse(y);
+
+				continue;
+			}
+
+			if (trimLine.StartsWith("next"))
+			{
+				string id = this.GetValueFromKey(trimLine, "next", "id");
+				if (id != null)
+					currentFrameToMap.next = int.Parse(id);
+			}
+
+			if (trimLine.StartsWith("movement"))
+			{
+				string dvx = this.GetValueFromKey(trimLine, "movement", "dvx");
+				if (dvx != null)
+					currentFrameToMap.dvx = float.Parse(dvx);
+
+				string dvy = this.GetValueFromKey(trimLine, "movement", "dvy");
+				if (dvy != null)
+					currentFrameToMap.dvy = float.Parse(dvy);
+
+				string dvz = this.GetValueFromKey(trimLine, "movement", "dvz");
+				if (dvz != null)
+					currentFrameToMap.dvz = float.Parse(dvz);
+
+				continue;
+			}
+
+			if (trimLine.StartsWith("hit"))
+			{
+				string hitTaunt = this.GetValueFromKey(trimLine, "hit", "hit_taunt");
+				if (hitTaunt != null)
+					currentFrameToMap.hitTaunt = int.Parse(hitTaunt);
+
+				string hitJump = this.GetValueFromKey(trimLine, "hit", "hitJump");
+				if (hitJump != null)
+					currentFrameToMap.hitJump = int.Parse(hitJump);
+
+				string hitDefense = this.GetValueFromKey(trimLine, "hit", "hitDefense");
+				if (hitDefense != null)
+					currentFrameToMap.hitDefense = int.Parse(hitDefense);
+
+				string hitAttack = this.GetValueFromKey(trimLine, "hit", "hitAttack");
+				if (hitAttack != null)
+					currentFrameToMap.hitAttack = int.Parse(hitAttack);
+
+				string hitJumpDefense = this.GetValueFromKey(trimLine, "hit", "hitJumpDefense");
+				if (hitJumpDefense != null)
+					currentFrameToMap.hitJumpDefense = int.Parse(hitJumpDefense);
+
+				string hitDefensePower = this.GetValueFromKey(trimLine, "hit", "hitDefensePower");
+				if (hitDefensePower != null)
+					currentFrameToMap.hitDefensePower = int.Parse(hitDefensePower);
+
+				string hitDefenseAttack = this.GetValueFromKey(trimLine, "hit", "hitDefenseAttack");
+				if (hitDefenseAttack != null)
+					currentFrameToMap.hitDefenseAttack = int.Parse(hitDefenseAttack);
+
+				continue;
+			}
+
+			if (trimLine.StartsWith("bdy"))
+			{
+				// bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
+				string kind = this.GetValueFromKey(trimLine, "bdy", "kind");
+				if (kind != null)
+					Enum.TryParse<BdyKindEnum>(kind, true, out currentFrameToMap.kind);
+
+				string x = this.GetValueFromKey(trimLine, "bdy", "x");
+				if (x != null)
+					currentFrameToMap.x_body = float.Parse(x);
+
+				string y = this.GetValueFromKey(trimLine, "bdy", "y");
+				if (y != null)
+					currentFrameToMap.y_body = float.Parse(y);
+
+				string z = this.GetValueFromKey(trimLine, "bdy", "z");
+				if (z != null)
+					currentFrameToMap.z_body = float.Parse(z);
+
+				string h = this.GetValueFromKey(trimLine, "bdy", "h");
+				if (h != null)
+					currentFrameToMap.h_body = float.Parse(h);
+
+				string w = this.GetValueFromKey(trimLine, "bdy", "w");
+				if (w != null)
+					currentFrameToMap.w_body = float.Parse(w);
+
+				string zwidth = this.GetValueFromKey(trimLine, "bdy", "zwidth");
+				if (zwidth != null)
+					currentFrameToMap.zwidth_body = float.Parse(zwidth);
+
+				continue;
+			}
+
+			if (trimLine == "" && currentFrameToMap != null)
+			{
+				objEntity.frames.Add(currentFrameToMap.id, currentFrameToMap);
+			}
+
 		}
 	}
 
 	public override void _Ready()
 	{
+		sprite3D = GetNode<Sprite3D>("sprite");
+
+		if (objEntity.type == ObjTypeEnum.CHARACTER)
+			currentFrame = objEntity.frames[0];
 	}
 
 	public override void _Process(double delta)
 	{
+		// currentFrame.pic / 
+		// sprite3D.Texture = null;
+		// sprite3D.RegionRect = null;
+		// sprite3D.Offset = null;
 	}
 
 	private string GetValueFromKey(string line, string keyLine, string key)
@@ -144,7 +345,7 @@ public partial class ObjDataReader : Node
 		string[] separateContent = line.Replace(keyLine + ":", "").Split(" ");
 		foreach (string content in separateContent)
 		{
-			if (content != "")
+			if (content != "" && content.StartsWith(key))
 			{
 				return content.Replace(key + "=", "").Replace("\"", "");
 			}
@@ -152,11 +353,20 @@ public partial class ObjDataReader : Node
 		return null;
 	}
 
-	private SpriteDimensionEntity GetSpriteDimensionFromKey(string line, string keyLine, string key)
+	private SpriteAtlasEntity GetSpriteAtlasFromKey(string line, string keyLine, string key)
 	{
-		SpriteDimensionEntity spriteDimension = new();
+		SpriteAtlasEntity spriteAtlas = new();
 		string dimension = this.GetValueFromKey(line, keyLine, key);
-		GD.Print(dimension);
-		return spriteDimension;
+		if (dimension == null)
+		{
+			return null;
+		}
+
+		string[] values = dimension.Split("x");
+		spriteAtlas.pixelSize = int.Parse(values[0]);
+		spriteAtlas.quantityPerRowAndColumn = int.Parse(values[1]);
+		spriteAtlas.spriteSize = int.Parse(values[2]);
+		spriteAtlas.quantityOfSprites = int.Parse(values[3]);
+		return spriteAtlas;
 	}
 }
