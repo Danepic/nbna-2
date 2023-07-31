@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bck1dfkk7vy8u"]
 
 [ext_resource type="Texture2D" uid="uid://4xg8tdfd5iw" path="res://bgs/training-room/stage.png" id="1_cxcxb"]
-[ext_resource type="Script" path="res://scripts/components/ObjDataReader.cs" id="2_cns2q"]
+[ext_resource type="PackedScene" uid="uid://drkpgivdd48ew" path="res://scenes/player_sample.tscn" id="3_sgwrl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_wpex1"]
 size = Vector2(9.99, 3.685)
@@ -19,17 +19,13 @@ data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0
 [node name="battle-sample" type="Node3D"]
 
 [node name="sprite" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00275373, 0, -0.236628)
 texture = ExtResource("1_cxcxb")
-script = ExtResource("2_cns2q")
-
-[node name="sprite2" type="Sprite3D" parent="."]
-texture = ExtResource("1_cxcxb")
-script = ExtResource("2_cns2q")
 
 [node name="camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.927836, 0.372988, 0, -0.372988, 0.927836, -0.003, -1.40255, 3.664)
+transform = Transform3D(1, 0, 0, 0, 0.927836, 0.372988, 0, -0.372988, 0.927836, -0.003, 2.112, 7.879)
 projection = 1
-size = 4.5
+size = 5.905
 
 [node name="floor" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.875)
@@ -59,3 +55,6 @@ mesh = SubResource("BoxMesh_gu28e")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="wall-down/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_vl2ov")
+
+[node name="player" parent="." instance=ExtResource("3_sgwrl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.356, -0.675956, 3.32056)

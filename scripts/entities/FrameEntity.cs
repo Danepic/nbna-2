@@ -8,6 +8,7 @@ public class FrameEntity
     public StateFrameEnum state;
     public float wait;
 
+    public int textureIndex;
     public int pic;
     public float x_offset;
     public float y_offset;

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://drkpgivdd48ew"]
 
 [ext_resource type="Script" path="res://scripts/components/ObjDataReader.cs" id="1_tlqyk"]
-[ext_resource type="Texture2D" uid="uid://dj5owpdfnqiuh" path="res://chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite.png" id="2_77ktk"]
+[ext_resource type="Texture2D" uid="uid://bgq8a5bnhvd08" path="res://icon.svg" id="2_lpywa"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g58d2"]
 size = Vector3(0.274, 0.622962, 0.22)
@@ -76,7 +76,7 @@ spritePath = "res://chars/naruto/ns-oodama-rasengan/sprites"
 [node name="sprite" type="Sprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.329268, 0)
 offset = Vector2(-0.415, 0)
-texture = ExtResource("2_77ktk")
+texture = ExtResource("2_lpywa")
 region_enabled = true
 region_rect = Rect2(4, 4, 62, 65)
 

@@ -49,7 +49,13 @@ public partial class ObjDataReader : Node
 			}
 		}
 
+		GD.Print("1: " + objEntity.sprites[0].fileName);
+
 		FileAccess dataFileAccess = Open(dataFile, ModeFlags.Read);
+		if (dataFileAccess == null)
+		{
+			return;
+		}
 		string[] dataContentLines = dataFileAccess.GetAsText().Split("\n");
 
 		FrameEntity currentFrameToMap = null;
@@ -113,41 +119,22 @@ public partial class ObjDataReader : Node
 
 			if (trimLine.StartsWith("sprite"))
 			{
-				SpriteAtlasEntity first = this.GetSpriteAtlasFromKey(trimLine, "sprite", "1");
-				if (first != null)
-					objEntity.sprites[0] = first;
+				for (int i = 0; i < objEntity.sprites.Count; i++)
+				{
+					SpriteAtlasEntity spriteAtlasEnriched = this.GetSpriteAtlasFromKey(trimLine, "sprite", (i + 1).ToString());
 
-				SpriteAtlasEntity second = this.GetSpriteAtlasFromKey(trimLine, "sprite", "2");
-				if (second != null)
-					objEntity.sprites[1] = second;
-
-				SpriteAtlasEntity third = this.GetSpriteAtlasFromKey(trimLine, "sprite", "3");
-				if (third != null)
-					objEntity.sprites[2] = third;
-
-				SpriteAtlasEntity fourth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "4");
-				if (fourth != null)
-					objEntity.sprites[3] = fourth;
-
-				SpriteAtlasEntity fifth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "5");
-				if (fifth != null)
-					objEntity.sprites[4] = fifth;
-
-				SpriteAtlasEntity sixth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "6");
-				if (sixth != null)
-					objEntity.sprites[5] = sixth;
-
-				SpriteAtlasEntity seventh = this.GetSpriteAtlasFromKey(trimLine, "sprite", "7");
-				if (seventh != null)
-					objEntity.sprites[6] = seventh;
-
-				SpriteAtlasEntity eighth = this.GetSpriteAtlasFromKey(trimLine, "sprite", "8");
-				if (eighth != null)
-					objEntity.sprites[7] = eighth;
-
-				continue;
+					if (spriteAtlasEnriched != null)
+					{
+						objEntity.sprites[i].textureIndex = i;
+						objEntity.sprites[i].pixelSize = spriteAtlasEnriched.pixelSize;
+						objEntity.sprites[i].quantityPerRowAndColumn = spriteAtlasEnriched.quantityPerRowAndColumn;
+						objEntity.sprites[i].spriteSize = spriteAtlasEnriched.spriteSize;
+						objEntity.sprites[i].quantityOfSprites = spriteAtlasEnriched.quantityOfSprites;
+					}
+				}
 			}
 
+			spritePosition = new();
 			foreach (KeyValuePair<int, SpriteAtlasEntity> spriteAtlasMap in objEntity.sprites)
 			{
 				Dictionary<int, Rect2> position = new();
@@ -161,7 +148,7 @@ public partial class ObjDataReader : Node
 				{
 					for (int x_row = 0; x_row < spriteAtlasMap.Value.quantityPerRowAndColumn; x_row++)
 					{
-						Rect2 rect2 = new Rect2(new Vector2(x, y), new Vector2(w, h));
+						Rect2 rect2 = new(new Vector2(x, y), new Vector2(w, h));
 						position.Add(index, rect2);
 
 						x += spriteAtlasMap.Value.spriteSize;
@@ -174,15 +161,6 @@ public partial class ObjDataReader : Node
 				}
 
 				spritePosition.Add(spriteAtlasMap.Value.textureIndex, position);
-			}
-
-			GD.Print(spritePosition.Count);
-			foreach (KeyValuePair<int, Dictionary<int, Rect2>> spriteAtlasMap in spritePosition)
-			{
-				foreach (KeyValuePair<int, Rect2> rectMap in spriteAtlasMap.Value)
-				{
-					GD.Print($"{spriteAtlasMap.Key} - {rectMap.Key} - {rectMap.Value.Position.X}:{rectMap.Value.Position.Y}:{rectMap.Value.Size.X}:{rectMap.Value.Size.Y}");
-				}
 			}
 
 			if (trimLine.StartsWith("frame"))
@@ -320,24 +298,25 @@ public partial class ObjDataReader : Node
 			{
 				objEntity.frames.Add(currentFrameToMap.id, currentFrameToMap);
 			}
-
 		}
 	}
 
 	public override void _Ready()
 	{
-		sprite3D = GetNode<Sprite3D>("sprite");
 
 		if (objEntity.type == ObjTypeEnum.CHARACTER)
 			currentFrame = objEntity.frames[0];
+
+		sprite3D = GetNode<Sprite3D>("sprite");
+		GD.Print("2: " + objEntity.sprites[0].fileName);
 	}
 
 	public override void _Process(double delta)
 	{
-		// currentFrame.pic / 
-		// sprite3D.Texture = null;
-		// sprite3D.RegionRect = null;
-		// sprite3D.Offset = null;
+		// GD.Print(currentFrame.id);
+		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
+		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
+		GD.Print(objEntity.sprites[0].fileName + "-" + spritePosition[currentFrame.textureIndex][currentFrame.pic]);
 	}
 
 	private string GetValueFromKey(string line, string keyLine, string key)
