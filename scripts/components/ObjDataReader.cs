@@ -20,36 +20,15 @@ public partial class ObjDataReader : Node
 
 	public override void _EnterTree()
 	{
-		this.objEntity = new();
-		this.objEntity.sprites = new();
-		this.objEntity.header = new();
-		this.objEntity.stats = new();
-		this.objEntity.frames = new();
+        this.objEntity = new()
+        {
+            sprites = new(),
+            header = new(),
+            stats = new(),
+            frames = new()
+        };
 
-		using DirAccess spriteDir = DirAccess.Open(spritePath);
-
-		if (spriteDir != null)
-		{
-			int numberOfSprite = 0;
-			spriteDir.ListDirBegin();
-			string fileName = spriteDir.GetNext();
-			while (fileName != "")
-			{
-				if (!spriteDir.CurrentIsDir() && fileName.EndsWith(".png"))
-				{
-					SpriteAtlasEntity spriteAtlas = new();
-					spriteAtlas.sprite = GD.Load<Texture2D>(spritePath + "/" + fileName);
-					spriteAtlas.fileName = fileName;
-					spriteAtlas.textureIndex = numberOfSprite;
-
-					objEntity.sprites.Add(numberOfSprite, spriteAtlas);
-					numberOfSprite++;
-				}
-				fileName = spriteDir.GetNext();
-			}
-		}
-
-		GD.Print("1: " + objEntity.sprites[0].fileName);
+        objEntity.sprites = SpriteFileReaderUtil.Get(spritePath);
 
 		FileAccess dataFileAccess = Open(dataFile, ModeFlags.Read);
 		if (dataFileAccess == null)
@@ -62,60 +41,21 @@ public partial class ObjDataReader : Node
 		foreach (string line in dataContentLines)
 		{
 			string trimLine = line.Trim();
-			if (trimLine.StartsWith("type"))
-			{
-				string type = this.GetValueFromKey(trimLine, "type", "value");
-				if (type != null)
-					objEntity.type = Enum.Parse<ObjTypeEnum>(type);
 
-				continue;
-			}
+			objEntity.type = TypeDataReaderUtil.Get(trimLine).Value;
 
-			if (trimLine.StartsWith("header"))
-			{
-				string name = this.GetValueFromKey(trimLine, "header", "name");
-				if (name != null)
-					objEntity.header.name = name;
+			HeaderDataEntity header = HeaderDataReaderUtil.Get(trimLine);
+			objEntity.header.name = header.name;
+			objEntity.header.startHp = header.startHp;
+			objEntity.header.startMp = header.startMp;
 
-				string startHp = this.GetValueFromKey(trimLine, "header", "startHp");
-				if (startHp != null)
-					objEntity.header.startHp = int.Parse(startHp);
-
-				string startMp = this.GetValueFromKey(trimLine, "header", "startMp");
-				if (startMp != null)
-					objEntity.header.startMp = int.Parse(startMp);
-
-				continue;
-			}
-
-			if (trimLine.StartsWith("stats"))
-			{
-				string aggressive = this.GetValueFromKey(trimLine, "stats", "aggressive");
-				if (aggressive != null)
-					objEntity.stats.aggressive = int.Parse(aggressive);
-
-				string technique = this.GetValueFromKey(trimLine, "stats", "technique");
-				if (technique != null)
-					objEntity.stats.technique = int.Parse(technique);
-
-				string intelligent = this.GetValueFromKey(trimLine, "stats", "intelligent");
-				if (intelligent != null)
-					objEntity.stats.intelligent = int.Parse(intelligent);
-
-				string speed = this.GetValueFromKey(trimLine, "stats", "speed");
-				if (speed != null)
-					objEntity.stats.speed = int.Parse(speed);
-
-				string resistance = this.GetValueFromKey(trimLine, "stats", "resistance");
-				if (resistance != null)
-					objEntity.stats.resistance = int.Parse(resistance);
-
-				string stamina = this.GetValueFromKey(trimLine, "stats", "stamina");
-				if (stamina != null)
-					objEntity.stats.stamina = int.Parse(stamina);
-
-				continue;
-			}
+            StatsEntity stats = StatsDataReaderUtil.Get(trimLine);
+			objEntity.stats.aggressive = stats.aggressive;
+			objEntity.stats.technique = stats.technique;
+			objEntity.stats.intelligent = stats.intelligent;
+			objEntity.stats.speed = stats.speed;
+			objEntity.stats.resistance = stats.resistance;
+			objEntity.stats.stamina = stats.stamina;
 
 			if (trimLine.StartsWith("sprite"))
 			{
@@ -317,35 +257,5 @@ public partial class ObjDataReader : Node
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 		GD.Print(objEntity.sprites[0].fileName + "-" + spritePosition[currentFrame.textureIndex][currentFrame.pic]);
-	}
-
-	private string GetValueFromKey(string line, string keyLine, string key)
-	{
-		string[] separateContent = line.Replace(keyLine + ":", "").Split(" ");
-		foreach (string content in separateContent)
-		{
-			if (content != "" && content.StartsWith(key))
-			{
-				return content.Replace(key + "=", "").Replace("\"", "");
-			}
-		}
-		return null;
-	}
-
-	private SpriteAtlasEntity GetSpriteAtlasFromKey(string line, string keyLine, string key)
-	{
-		SpriteAtlasEntity spriteAtlas = new();
-		string dimension = this.GetValueFromKey(line, keyLine, key);
-		if (dimension == null)
-		{
-			return null;
-		}
-
-		string[] values = dimension.Split("x");
-		spriteAtlas.pixelSize = int.Parse(values[0]);
-		spriteAtlas.quantityPerRowAndColumn = int.Parse(values[1]);
-		spriteAtlas.spriteSize = int.Parse(values[2]);
-		spriteAtlas.quantityOfSprites = int.Parse(values[3]);
-		return spriteAtlas;
 	}
 }
