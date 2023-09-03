@@ -88,3 +88,5 @@ shape = SubResource("BoxShape3D_g58d2")
 libraries = {
 "": SubResource("AnimationLibrary_fgtgb")
 }
+
+[node name="wait" type="Timer" parent="."]
