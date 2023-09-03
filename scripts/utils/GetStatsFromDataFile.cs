@@ -37,7 +37,7 @@ public static class GetStatsFromDataFile
 				if (stamina != null)
 					stats.stamina = int.Parse(stamina);
 
-				continue;
+				return stats;
 			}
 		}
 		throw new Exception("Stats not found for Object Entity!");

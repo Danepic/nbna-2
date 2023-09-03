@@ -42,12 +42,19 @@ public partial class ObjDataReader : Node
 
 	public override void _Ready()
 	{
-		if (objEntity.type == ObjTypeEnum.CHARACTER)
-			currentFrame = objEntity.frames[0];
-
 		sprite3D = GetNode<Sprite3D>("sprite");
 		waitTimer = GetNode<Timer>("wait");
-		waitTimer.Timeout += OnWaitTimeout;
+
+		if (objEntity.type == ObjTypeEnum.CHARACTER)
+		{
+			currentFrame = objEntity.frames[0];
+			sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
+			sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
+
+			waitTimer.Timeout += OnWaitTimeout;
+			waitTimer.WaitTime = currentFrame.wait;
+			waitTimer.Start();
+		}
 
 		this.frameHelper = new()
 		{
@@ -59,27 +66,20 @@ public partial class ObjDataReader : Node
 
 	public override void _Process(double delta)
 	{
+	}
+
+	public void OnWaitTimeout()
+	{
+		GD.Print($"[{frameHelper.selfId} - {objEntity.header.name}] OnWaitTimeout Called");
+		
+		currentFrame = ChangeFrameUtil.Apply(currentFrame.next, currentFrame, objEntity.frames, ref frameHelper);
+
+		waitTimer.WaitTime = this.currentFrame.wait / 30;
+		waitTimer.Start();
+
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 
-		if (waitTimer.WaitTime == 0)
-		{
-			waitTimer.WaitTime = this.currentFrame.wait / 30;
-			waitTimer.Start();
-
-			sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
-			sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
-		}
-
-		if (waitTimer.WaitTime <= 0)
-		{
-			currentFrame = ChangeFrameUtil.Apply(currentFrame.next, currentFrame, objEntity.frames, ref waitTimer, ref frameHelper);
-		}
-
-		GD.Print(waitTimer.WaitTime);
-	}
-
-	public void OnWaitTimeout() {
-		this.QueueFree();
+		GD.Print(currentFrame.ToString());
 	}
 }
