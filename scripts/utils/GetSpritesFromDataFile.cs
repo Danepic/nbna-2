@@ -30,32 +30,37 @@ public static class GetSpritesFromDataFile
 		}
 
 		foreach (KeyValuePair<int, SpriteAtlasEntity> spriteAtlasMap in sprites)
+		{
+			Dictionary<int, Rect2> position = new();
+			int x = 0;
+			int y = 0;
+			int w = spriteAtlasMap.Value.spriteSize;
+			int h = spriteAtlasMap.Value.spriteSize;
+
+			int index = 0;
+			for (int y_row = 0; y_row < spriteAtlasMap.Value.quantityPerRowAndColumn; y_row++)
 			{
-				Dictionary<int, Rect2> position = new();
-				int x = 0;
-				int y = 0;
-				int w = spriteAtlasMap.Value.spriteSize;
-				int h = spriteAtlasMap.Value.spriteSize;
-
-				int index = 0;
-				for (int y_row = 0; y_row < spriteAtlasMap.Value.quantityPerRowAndColumn; y_row++)
+				for (int x_row = 0; x_row < spriteAtlasMap.Value.quantityPerRowAndColumn; x_row++)
 				{
-					for (int x_row = 0; x_row < spriteAtlasMap.Value.quantityPerRowAndColumn; x_row++)
-					{
-						Rect2 rect2 = new(new Vector2(x, y), new Vector2(w, h));
-						position.Add(index, rect2);
+					Rect2 rect2 = new(new Vector2(x, y), new Vector2(w, h));
+					position.Add(index, rect2);
 
-						x += spriteAtlasMap.Value.spriteSize;
+					x += spriteAtlasMap.Value.spriteSize;
+
+					//Garante que o index ao chegar na ultima imagem em y, não incremente o index para mais do que a quantityPerRowAndColumn
+					if (x_row + 1 < spriteAtlasMap.Value.quantityPerRowAndColumn)
+					{
 						index++;
 					}
-
-					x = 0;
-					y += spriteAtlasMap.Value.spriteSize;
-					index++;
 				}
 
-				spritePosition.Add(spriteAtlasMap.Value.textureIndex, position);
+				x = 0;
+				y += spriteAtlasMap.Value.spriteSize;
+				index++;
 			}
+
+			spritePosition.Add(spriteAtlasMap.Value.textureIndex, position);
+		}
 
 		if (spritePosition.Count > 0)
 		{

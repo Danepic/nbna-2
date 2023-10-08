@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://bck1dfkk7vy8u"]
+[gd_scene load_steps=8 format=3 uid="uid://bck1dfkk7vy8u"]
 
+[ext_resource type="Script" path="res://scripts/components/Debug.cs" id="1_c82ke"]
 [ext_resource type="Texture2D" uid="uid://4xg8tdfd5iw" path="res://bgs/training-room/stage.png" id="1_cxcxb"]
 [ext_resource type="PackedScene" uid="uid://drkpgivdd48ew" path="res://scenes/player_sample.tscn" id="3_sgwrl"]
 
@@ -17,6 +18,8 @@ size = Vector3(9.985, 4.39, 0.38)
 data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
 
 [node name="battle-sample" type="Node3D"]
+process_mode = 3
+script = ExtResource("1_c82ke")
 
 [node name="sprite" type="Sprite3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00275373, 0, -0.236628)

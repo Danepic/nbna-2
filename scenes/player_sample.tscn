@@ -69,6 +69,7 @@ _data = {
 }
 
 [node name="player" type="CharacterBody3D"]
+process_mode = 1
 script = ExtResource("1_tlqyk")
 dataFile = "res://chars/naruto/ns-oodama-rasengan/obj.dat"
 spritePath = "res://chars/naruto/ns-oodama-rasengan/sprites"
@@ -80,7 +81,18 @@ texture = ExtResource("2_lpywa")
 region_enabled = true
 region_rect = Rect2(4, 4, 62, 65)
 
-[node name="collision" type="CollisionShape3D" parent="."]
+[node name="shadow_sprite" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.329268, 0)
+offset = Vector2(-0.415, 0)
+texture = ExtResource("2_lpywa")
+region_enabled = true
+region_rect = Rect2(4, 4, 62, 65)
+
+[node name="hurtbox" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31284, 0)
+shape = SubResource("BoxShape3D_g58d2")
+
+[node name="hitbox" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31284, 0)
 shape = SubResource("BoxShape3D_g58d2")
 
@@ -90,3 +102,5 @@ libraries = {
 }
 
 [node name="wait" type="Timer" parent="."]
+
+[node name="input" type="Node" parent="."]

@@ -37,6 +37,13 @@ public partial class ObjDataReader : Node
 		};
 
 		this.spritePosition = GetSpritesFromDataFile.Apply(dataFileAccess, ref this.objEntity.sprites);
+
+		foreach(KeyValuePair<int, Dictionary<int, Rect2>> entry in spritePosition) {
+			foreach(KeyValuePair<int, Rect2> entry2 in entry.Value) {
+				GD.Print("index: " + entry.Key + " - pos: " + entry2.Key + "/" + entry2.Value);
+			}
+		}
+
 		this.objEntity.frames = GetFramesFromDataFile.Apply(dataFileAccess);
 	}
 
@@ -52,7 +59,7 @@ public partial class ObjDataReader : Node
 			sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 
 			waitTimer.Timeout += OnWaitTimeout;
-			waitTimer.WaitTime = currentFrame.wait;
+			waitTimer.WaitTime = 0;
 			waitTimer.Start();
 		}
 
@@ -66,12 +73,16 @@ public partial class ObjDataReader : Node
 
 	public override void _Process(double delta)
 	{
+
 	}
 
 	public void OnWaitTimeout()
 	{
+		GetTree().Paused = !GetTree().Paused;
+		GD.Print(currentFrame.ToString());
+
 		GD.Print($"[{frameHelper.selfId} - {objEntity.header.name}] OnWaitTimeout Called");
-		
+
 		currentFrame = ChangeFrameUtil.Apply(currentFrame.next, currentFrame, objEntity.frames, ref frameHelper);
 
 		waitTimer.WaitTime = this.currentFrame.wait / 30;
@@ -79,7 +90,5 @@ public partial class ObjDataReader : Node
 
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
-
-		GD.Print(currentFrame.ToString());
 	}
 }

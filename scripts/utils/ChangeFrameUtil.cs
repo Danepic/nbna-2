@@ -11,7 +11,7 @@ public static class ChangeFrameUtil
         frameHelper.summonAction = -1;
         if (usingNextPattern)
         {
-            GD.Print(currentFrame.next);
+            GD.Print("Next frame id: " + currentFrame.next);
             return currentFrame.next == (int)FrameSpecialValuesEnum.BACK_TO_STANDING ? frames[0] : frames[frameToGo];
         }
         else
