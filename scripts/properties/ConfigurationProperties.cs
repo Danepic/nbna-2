@@ -3,5 +3,5 @@ using System;
 
 public static class GameConfiguration
 {
-	private string 
+	private static readonly string seila;
 }

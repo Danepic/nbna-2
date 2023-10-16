@@ -21,11 +21,14 @@ public class FrameEntity
 
 	public int hitTaunt;
 	public int hitJump;
+	public int hitSuperPower;
 	public int hitDefense;
 	public int hitAttack;
+	public int hitPower;
 	public int hitJumpDefense;
 	public int hitDefensePower;
 	public int hitDefenseAttack;
+	public int holdForwardAfter;
 
 	public BdyKindEnum kind;
 	public float x_body;

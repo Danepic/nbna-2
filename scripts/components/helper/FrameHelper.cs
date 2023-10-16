@@ -32,10 +32,6 @@ public class FrameHelper
 	public bool attacked;
 	public bool wasAttacked;
 
-	// Running
-	private float RUNNING_COUNT = 4f;
-	private float SIDE_DASH_COUNT = 4f;
-
 	public float runningRightCount;
 	public bool runningRightEnable;
 	public bool countRightEnable;
@@ -53,9 +49,6 @@ public class FrameHelper
 	public bool sideDashDownEnable;
 	public bool countSideDashDownEnable;
 
-	//Movement
-	public Vector2 inputDirection;
-
 	public bool enableNextIfHit;
 
 	//Hit
@@ -65,6 +58,14 @@ public class FrameHelper
 	public bool hitAttack;
 	public bool hitTaunt;
 	public bool hitPower;
+	public bool hitSuperPower;
+	public bool hitUp;
+	public bool hitDown;
+	public bool hitLeft;
+	public bool hitRight;
+
+	//Hit State
+	public bool inMovement;
 
 	//Hold
 	public bool holdForwardAfter;

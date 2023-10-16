@@ -80,7 +80,7 @@ public static class GetFramesFromDataFile
 
             if (trimLine.StartsWith("hit"))
             {
-                string hitTaunt = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hit_taunt");
+                string hitTaunt = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitTaunt");
                 if (hitTaunt != null)
                     currentFrameToMap.hitTaunt = int.Parse(hitTaunt);
 
@@ -107,6 +107,10 @@ public static class GetFramesFromDataFile
                 string hitDefenseAttack = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitDefenseAttack");
                 if (hitDefenseAttack != null)
                     currentFrameToMap.hitDefenseAttack = int.Parse(hitDefenseAttack);
+
+                string holdForwardAfter = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "holdForwardAfter");
+                if (holdForwardAfter != null)
+                    currentFrameToMap.holdForwardAfter = int.Parse(holdForwardAfter);
 
                 continue;
             }
@@ -148,6 +152,7 @@ public static class GetFramesFromDataFile
             if (trimLine == "" && currentFrameToMap != null)
             {
                 result.Add(currentFrameToMap.id, currentFrameToMap);
+                currentFrameToMap = null;
             }
         }
 
