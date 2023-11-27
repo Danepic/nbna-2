@@ -14,6 +14,9 @@ public partial class ObjProcess : Node
 	protected ObjEntity objEntity;
 	protected FrameEntity currentFrame;
 
+	protected int nextFrameId;
+	protected bool useCustomNextId;
+
 	[Export(PropertyHint.Dir)]
 	protected string spritePath;
 	protected Dictionary<int, Dictionary<int, Rect2>> spritePosition;
@@ -53,8 +56,25 @@ public partial class ObjProcess : Node
 
 	public void OnWaitTimeout()
 	{
-		// GD.Print($"[{frameHelper.selfId} - {objEntity.header.name}] OnWaitTimeout Called");
-		ChangeFrame(currentFrame.next);
+		if (useCustomNextId)
+		{
+			ChangeFrame(nextFrameId);
+			useCustomNextId = false;
+		}
+		else
+		{
+			ChangeFrame(currentFrame.next);
+		}
+	}
+
+	protected void ChangeFrame(CharStartFrameEnum nextFrameEnum)
+	{
+		this.ChangeFrame((int)nextFrameEnum);
+	}
+
+	protected void ChangeFrame(Nullable<int> nextFrameId)
+	{
+		this.ChangeFrame(nextFrameId.Value);
 	}
 
 	protected void ChangeFrame(int nextFrameId)
@@ -70,6 +90,7 @@ public partial class ObjProcess : Node
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 
+		GD.Print("currentFrame.textureIndex: " + currentFrame.textureIndex);
 		shadowSprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		shadowSprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 

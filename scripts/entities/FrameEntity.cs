@@ -19,16 +19,16 @@ public class FrameEntity
 	public float dvy;
 	public float dvz;
 
-	public int hitTaunt;
-	public int hitJump;
-	public int hitSuperPower;
-	public int hitDefense;
-	public int hitAttack;
-	public int hitPower;
-	public int hitJumpDefense;
-	public int hitDefensePower;
-	public int hitDefenseAttack;
-	public int holdForwardAfter;
+	public Nullable<int> hitTaunt;
+	public Nullable<int> hitJump;
+	public Nullable<int> hitSuperPower;
+	public Nullable<int> hitDefense;
+	public Nullable<int> hitAttack;
+	public Nullable<int> hitPower;
+	public Nullable<int> hitJumpDefense;
+	public Nullable<int> hitDefensePower;
+	public Nullable<int> hitDefenseAttack;
+	public Nullable<int> holdForwardAfter;
 
 	public BdyKindEnum kind;
 	public float x_body;

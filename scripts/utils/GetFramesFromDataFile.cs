@@ -39,6 +39,10 @@ public static class GetFramesFromDataFile
 
             if (trimLine.StartsWith("img"))
             {
+                string index = GetValueFromKeyInDataFile.Apply(trimLine, "img", "index");
+                if (index != null)
+                    currentFrameToMap.textureIndex = int.Parse(index);
+                    
                 string pic = GetValueFromKeyInDataFile.Apply(trimLine, "img", "pic");
                 if (pic != null)
                     currentFrameToMap.pic = int.Parse(pic);

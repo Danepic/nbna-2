@@ -18,6 +18,10 @@ public partial class CharProcess : ObjProcess
 
 	protected Timer runningRightCounter;
 
+	protected Timer sideDashUpCounter;
+
+	protected Timer sideDashDownCounter;
+
 	public override void _Ready()
 	{
 		sprite3D = GetNode<Sprite3D>("sprite");
@@ -26,6 +30,8 @@ public partial class CharProcess : ObjProcess
 		characterBody3D = GetNode<CharacterBody3D>("body");
 		runningLeftCounter = GetNode<Timer>("runningLeftCounter");
 		runningRightCounter = GetNode<Timer>("runningRightCounter");
+		sideDashUpCounter = GetNode<Timer>("sideDashUpCounter");
+		sideDashDownCounter = GetNode<Timer>("sideDashDownCounter");
 
 		currentFrame = objEntity.frames[0];
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
@@ -43,6 +49,14 @@ public partial class CharProcess : ObjProcess
 		runningRightCounter.WaitTime = 0;
 		runningRightCounter.Start();
 
+		sideDashUpCounter.Timeout += OnSideDashUpCounterTimeout;
+		sideDashUpCounter.WaitTime = 0;
+		sideDashUpCounter.Start();
+
+		sideDashDownCounter.Timeout += OnSideDashDownCounterTimeout;
+		sideDashDownCounter.WaitTime = 0;
+		sideDashDownCounter.Start();
+
 		this.frameHelper = new()
 		{
 			currentHp = this.objEntity.header.startHp,
@@ -57,8 +71,14 @@ public partial class CharProcess : ObjProcess
 		//Input
 		InputHandle();
 
+		//PassiveActions
+		base.useCustomNextId = PassiveActionHandle();
+
 		//Actions
-		ActionHandle();
+		if (!base.useCustomNextId)
+		{
+			ActionHandle();
+		}
 
 		//State
 		StateHandle();
@@ -66,6 +86,16 @@ public partial class CharProcess : ObjProcess
 		//Physics
 		//Opoint
 		//Audio
+	}
+
+	private bool PassiveActionHandle()
+	{
+		if (currentFrame.holdForwardAfter != null && frameHelper.holdForwardAfter)
+		{
+			base.nextFrameId = currentFrame.holdForwardAfter.Value;
+			return true;
+		}
+		return false;
 	}
 
 	private void Flip(bool hitLeft, bool hitRight)
@@ -87,8 +117,6 @@ public partial class CharProcess : ObjProcess
 			shadowSprite3D.FlipH = false;
 			frameHelper.facingRight = true;
 		}
-
-		GD.Print(characterBody3D.Scale);
 	}
 
 	private void StateHandle()
@@ -111,6 +139,15 @@ public partial class CharProcess : ObjProcess
 				}
 				break;
 			case StateFrameEnum.RUNNING:
+				if (frameHelper.facingRight && frameHelper.hitLeft)
+				{
+					ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
+				}
+				if (!frameHelper.facingRight && frameHelper.hitRight)
+				{
+					ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
+				}
+				break;
 			case StateFrameEnum.ATTACKS:
 			case StateFrameEnum.JUMPING:
 			case StateFrameEnum.JUMPING_FALLING:
@@ -143,11 +180,11 @@ public partial class CharProcess : ObjProcess
 			case StateFrameEnum.CONFUSE:
 			case StateFrameEnum.PARALYZED:
 			case StateFrameEnum.STOP_RUNNING:
-				frameHelper.runningLeftCount = 0;
+				runningLeftCounter.Stop();
 				frameHelper.runningLeftEnable = false;
 				frameHelper.countLeftEnable = false;
 
-				frameHelper.runningRightCount = 0;
+				runningRightCounter.Stop();
 				frameHelper.runningRightEnable = false;
 				frameHelper.countRightEnable = false;
 				break;
@@ -195,6 +232,46 @@ public partial class CharProcess : ObjProcess
 		{
 			ChangeFrame(currentFrame.hitTaunt);
 			frameHelper.hitTaunt = false;
+			return;
+		}
+
+		// Run Right
+		if (frameHelper.runningRightEnable && frameHelper.hitRight)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
+			return;
+		}
+
+		// Run Left
+		if (frameHelper.runningLeftEnable && frameHelper.hitLeft)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
+			return;
+		}
+
+		// Side Dash Up
+		if (frameHelper.sideDashUpEnable && frameHelper.hitUp)
+		{
+			frameHelper.sideDashUpEnable = false;
+			frameHelper.sideDashDownEnable = false;
+			sideDashUpCounter.Stop();
+			sideDashDownCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
+			return;
+		}
+
+		// Side Dash Down
+		if (frameHelper.sideDashDownEnable && frameHelper.hitDown)
+		{
+			frameHelper.sideDashUpEnable = false;
+			frameHelper.sideDashDownEnable = false;
+			sideDashUpCounter.Stop();
+			sideDashDownCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
 			return;
 		}
 	}
@@ -307,6 +384,12 @@ public partial class CharProcess : ObjProcess
 		else if (Input.IsActionJustReleased(ActionEnum.UP.ToString().ToLower()))
 		{
 			frameHelper.hitUp = false;
+			if (!frameHelper.countSideDashUpEnable)
+			{
+				frameHelper.countSideDashUpEnable = true;
+				frameHelper.countSideDashDownEnable = false;
+				frameHelper.facingUp = true;
+			}
 		}
 
 		//down
@@ -318,6 +401,12 @@ public partial class CharProcess : ObjProcess
 		else if (Input.IsActionJustReleased(ActionEnum.DOWN.ToString().ToLower()))
 		{
 			frameHelper.hitDown = false;
+			if (!frameHelper.countSideDashDownEnable)
+			{
+				frameHelper.countSideDashDownEnable = true;
+				frameHelper.countSideDashUpEnable = false;
+				frameHelper.facingUp = false;
+			}
 		}
 
 		InputStateHandle();
@@ -337,6 +426,7 @@ public partial class CharProcess : ObjProcess
 		}
 
 		RunningEnabler();
+		SideDashEnabler();
 	}
 
 	private void RunningEnabler()
@@ -344,28 +434,62 @@ public partial class CharProcess : ObjProcess
 		if (frameHelper.countRightEnable && !frameHelper.runningRightEnable)
 		{
 			frameHelper.runningRightEnable = true;
-			frameHelper.runningRightCount = RUNNING_COUNT / 30;
-			frameHelper.runningLeftCount = 0;
+			runningRightCounter.WaitTime = RUNNING_COUNT / 30;
+			runningRightCounter.Start();
+			runningLeftCounter.Stop();
 		}
 
 		if (frameHelper.countLeftEnable && !frameHelper.runningLeftEnable)
 		{
 			frameHelper.runningLeftEnable = true;
-			frameHelper.runningLeftCount = RUNNING_COUNT / 30;
-			frameHelper.runningRightCount = 0;
+			runningLeftCounter.WaitTime = RUNNING_COUNT / 30;
+			runningLeftCounter.Start();
+			runningRightCounter.Stop();
+		}
+	}
+
+	private void SideDashEnabler()
+	{
+		if (frameHelper.countSideDashUpEnable && !frameHelper.sideDashUpEnable)
+		{
+			frameHelper.sideDashUpEnable = true;
+			sideDashUpCounter.WaitTime = SIDE_DASH_COUNT / 30;
+			sideDashUpCounter.Start();
+			sideDashDownCounter.Stop();
+		}
+
+		if (frameHelper.countSideDashDownEnable && !frameHelper.sideDashDownEnable)
+		{
+			frameHelper.sideDashDownEnable = true;
+			sideDashDownCounter.WaitTime = SIDE_DASH_COUNT / 30;
+			sideDashDownCounter.Start();
+			sideDashUpCounter.Stop();
 		}
 	}
 
 	public void OnRunningLeftCounterTimeout()
 	{
-		frameHelper.runningLeftCount = 0;
+		runningLeftCounter.Stop();
 		frameHelper.runningLeftEnable = false;
 		frameHelper.countLeftEnable = false;
 	}
 	public void OnRunningRightCounterTimeout()
 	{
-		frameHelper.runningRightCount = 0;
+		runningRightCounter.Stop();
 		frameHelper.runningRightEnable = false;
 		frameHelper.countRightEnable = false;
+	}
+
+	public void OnSideDashUpCounterTimeout()
+	{
+		sideDashUpCounter.Stop();
+		frameHelper.sideDashUpEnable = false;
+		frameHelper.countSideDashUpEnable = false;
+	}
+	public void OnSideDashDownCounterTimeout()
+	{
+		sideDashDownCounter.Stop();
+		frameHelper.sideDashDownEnable = false;
+		frameHelper.countSideDashDownEnable = false;
 	}
 }

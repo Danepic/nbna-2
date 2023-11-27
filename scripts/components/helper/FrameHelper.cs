@@ -32,11 +32,9 @@ public class FrameHelper
 	public bool attacked;
 	public bool wasAttacked;
 
-	public float runningRightCount;
 	public bool runningRightEnable;
 	public bool countRightEnable;
 
-	public float runningLeftCount;
 	public bool runningLeftEnable;
 	public bool countLeftEnable;
 

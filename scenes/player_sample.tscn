@@ -43,3 +43,7 @@ region_rect = Rect2(0, 0, 256, 256)
 [node name="runningLeftCounter" type="Timer" parent="."]
 
 [node name="runningRightCounter" type="Timer" parent="."]
+
+[node name="sideDashUpCounter" type="Timer" parent="."]
+
+[node name="sideDashDownCounter" type="Timer" parent="."]
