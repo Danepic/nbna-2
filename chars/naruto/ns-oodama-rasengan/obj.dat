@@ -3,7 +3,8 @@ type: value="CHARACTER"
     stats: aggressive="6" technique="6" intelligent="8" speed="7" resistance="8" stamina="10"
     sprite: 1="2048x8x256x64" 2="2048x8x256x64" 3="2048x8x256x64" 4="2048x8x256x64" 5="2048x8x256x64" 6="2048x8x256x64" 7="2048x8x256x64" 8="2048x8x256x64"
 
-    frame: id="0" name="standing" state="NORMAL" wait="2,5"
+
+frame: id="0" name="standing" state="NORMAL" wait="2,5"
     img: index="0" pic="16" x="-14" y="-20"
     next: id="1"
     movement: dvx="0" dvy="0" dvz="0"
@@ -60,7 +61,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
     
 
-    frame: id="20" name="walking" state="WALKING" wait="2"
+frame: id="20" name="walking" state="WALKING" wait="2"
     img: index="0" pic="32" x="-14" y="-20"
     next: id="21"
     movement: dvx="0" dvy="0" dvz="0"
@@ -145,7 +146,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="40" name="simple_dash" state="OTHER" wait="2"
+frame: id="40" name="simple_dash" state="OTHER" wait="2"
     img: index="0" pic="38" x="-14" y="-20"
     next: id="41"
     movement: dvx="0" dvy="0" dvz="0"
@@ -174,7 +175,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="45" name="running" state="RUNNING" wait="1,5"
+frame: id="45" name="running" state="RUNNING" wait="1,5"
     img: index="0" pic="32" x="-14" y="-20"
     next: id="46"
     movement: dvx="0" dvy="0" dvz="0"
@@ -259,7 +260,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="60" name="stop_running" state="STOP_RUNNING" wait="1"
+frame: id="60" name="stop_running" state="STOP_RUNNING" wait="1"
     img: index="0" pic="50" x="-14" y="-20"
     next: id="61"
     movement: dvx="0" dvy="0" dvz="0"
@@ -274,7 +275,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="70" name="running_dash" state="DASH" wait="2"
+frame: id="70" name="running_dash" state="DASH" wait="2"
     img: index="0" pic="48" x="-14" y="-20"
     next: id="71"
     movement: dvx="0" dvy="0" dvz="0"
@@ -301,7 +302,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="90" name="side_dash" state="SIDE_DASH" wait="1"
+frame: id="90" name="side_dash" state="SIDE_DASH" wait="1"
     img: index="6" pic="8" x="-14" y="-20"
     next: id="91"
     movement: dvx="0" dvy="0" dvz="0"
@@ -326,7 +327,7 @@ type: value="CHARACTER"
     bdy: kind="NORMAL" x="1" y="1" z="1" w="1" h="1" zwidth="1" wallCheck="false"
 
 
-    frame: id="290" name="crouch" state="OTHER" wait="4"
+frame: id="290" name="crouch" state="OTHER" wait="4"
     img: index="0" pic="51" x="-14" y="-20"
     next: id="0"
     movement: dvx="0" dvy="0" dvz="0"

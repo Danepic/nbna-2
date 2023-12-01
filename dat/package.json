@@ -1,0 +1,25 @@
+{
+  "name": "dat",
+  "displayName": "LF2 dat files",
+  "description": "LF2 data files",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "lf2",
+      "aliases": ["LF2 Data", "lf2"],
+      "extensions": [".dat"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "lf2",
+      "scopeName": "source.dat",
+      "path": "./syntaxes/lf2.tmLanguage.json"
+    }]
+  }
+}

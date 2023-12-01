@@ -12,7 +12,7 @@ config_version=5
 
 config/name="nbna-2"
 run/main_scene="res://scenes/battle_sample.tscn"
-config/features=PackedStringArray("4.1", "C#", "Forward Plus")
+config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]

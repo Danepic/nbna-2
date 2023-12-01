@@ -1,0 +1,50 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "LF2 Data",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#sub-keywords"
+		},
+		{
+			"include": "#frames"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"frames": {
+			"patterns": [{
+				"name": "entity.name.type",
+				"match": "\\b(frame)\\b"
+			}]
+		},
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.lf2",
+				"match": "\\b(type|header|stats|sprite|img|next|movement|hit|bdy)\\b"
+			}]
+		},
+		"sub-keywords": {
+			"patterns": [{
+				"name": "entity.name.function",
+				"match": "\\b(value|name|start_hp|start_mp|aggressive|technique|intelligent|speed|resistance|stamina|id|state|wait|index|pic|x|y|dvx|dvy|dvz|hitTaunt|hitJump|hitDefense|hitAttack|hitJumpDefense|hitDefensePower|hitDefenseAttack|kind|z|w|h|zwidth|wallCheck|holdForwardAfter)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.lf2",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.lf2",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.dat"
+}

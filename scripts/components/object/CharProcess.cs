@@ -98,7 +98,7 @@ public partial class CharProcess : ObjProcess
 		return false;
 	}
 
-	private void Flip(bool hitLeft, bool hitRight)
+	private void CanFlip(bool hitLeft, bool hitRight)
 	{
 		if (hitLeft && hitRight)
 		{
@@ -125,28 +125,18 @@ public partial class CharProcess : ObjProcess
 		switch (state)
 		{
 			case StateFrameEnum.STANDING:
-				if (frameHelper.inMovement)
-				{
-					ChangeFrame(StateHelper.WALKING);
-					Flip(frameHelper.hitLeft, frameHelper.hitRight);
-				}
+				CanWalking();
+				CanRunning();
+				CanSideDash();
 				break;
 			case StateFrameEnum.WALKING:
-				Flip(frameHelper.hitLeft, frameHelper.hitRight);
-				if (!frameHelper.inMovement)
-				{
-					ChangeFrame(StateHelper.STANDING);
-				}
+				CanFlip(frameHelper.hitLeft, frameHelper.hitRight);
+				CanStanding();
+				CanRunning();
+				CanSideDash();
 				break;
 			case StateFrameEnum.RUNNING:
-				if (frameHelper.facingRight && frameHelper.hitLeft)
-				{
-					ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
-				}
-				if (!frameHelper.facingRight && frameHelper.hitRight)
-				{
-					ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
-				}
+				CanStopRunning();
 				break;
 			case StateFrameEnum.ATTACKS:
 			case StateFrameEnum.JUMPING:
@@ -232,46 +222,6 @@ public partial class CharProcess : ObjProcess
 		{
 			ChangeFrame(currentFrame.hitTaunt);
 			frameHelper.hitTaunt = false;
-			return;
-		}
-
-		// Run Right
-		if (frameHelper.runningRightEnable && frameHelper.hitRight)
-		{
-			frameHelper.runningRightEnable = false;
-			frameHelper.runningLeftEnable = false;
-			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
-			return;
-		}
-
-		// Run Left
-		if (frameHelper.runningLeftEnable && frameHelper.hitLeft)
-		{
-			frameHelper.runningRightEnable = false;
-			frameHelper.runningLeftEnable = false;
-			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
-			return;
-		}
-
-		// Side Dash Up
-		if (frameHelper.sideDashUpEnable && frameHelper.hitUp)
-		{
-			frameHelper.sideDashUpEnable = false;
-			frameHelper.sideDashDownEnable = false;
-			sideDashUpCounter.Stop();
-			sideDashDownCounter.Stop();
-			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
-			return;
-		}
-
-		// Side Dash Down
-		if (frameHelper.sideDashDownEnable && frameHelper.hitDown)
-		{
-			frameHelper.sideDashUpEnable = false;
-			frameHelper.sideDashDownEnable = false;
-			sideDashUpCounter.Stop();
-			sideDashDownCounter.Stop();
-			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
 			return;
 		}
 	}
@@ -464,6 +414,85 @@ public partial class CharProcess : ObjProcess
 			sideDashDownCounter.WaitTime = SIDE_DASH_COUNT / 30;
 			sideDashDownCounter.Start();
 			sideDashUpCounter.Stop();
+		}
+	}
+
+	private void CanStanding()
+	{
+		if (!frameHelper.inMovement)
+		{
+			ChangeFrame(StateHelper.STANDING);
+		}
+	}
+
+	private void CanWalking()
+	{
+		if (frameHelper.inMovement)
+		{
+			ChangeFrame(StateHelper.WALKING);
+			CanFlip(frameHelper.hitLeft, frameHelper.hitRight);
+		}
+	}
+
+	public void CanRunning()
+	{
+		// Run Right
+		if (frameHelper.runningRightEnable && frameHelper.hitRight)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			runningLeftCounter.Stop();
+			runningRightCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
+			return;
+		}
+
+		// Run Left
+		if (frameHelper.runningLeftEnable && frameHelper.hitLeft)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			runningLeftCounter.Stop();
+			runningRightCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
+			return;
+		}
+	}
+
+	private void CanStopRunning()
+	{
+		if (frameHelper.facingRight && frameHelper.hitLeft)
+		{
+			ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
+		}
+		else if (!frameHelper.facingRight && frameHelper.hitRight)
+		{
+			ChangeFrame(CharStartFrameEnum.STOP_RUNNING);
+		}
+	}
+
+	public void CanSideDash()
+	{
+		// Side Dash Up
+		if (frameHelper.sideDashUpEnable && frameHelper.hitUp)
+		{
+			frameHelper.sideDashUpEnable = false;
+			frameHelper.sideDashDownEnable = false;
+			sideDashUpCounter.Stop();
+			sideDashDownCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
+			return;
+		}
+
+		// Side Dash Down
+		if (frameHelper.sideDashDownEnable && frameHelper.hitDown)
+		{
+			frameHelper.sideDashUpEnable = false;
+			frameHelper.sideDashDownEnable = false;
+			sideDashUpCounter.Stop();
+			sideDashDownCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
+			return;
 		}
 	}
 
