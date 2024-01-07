@@ -31,7 +31,7 @@
 		"sub-keywords": {
 			"patterns": [{
 				"name": "entity.name.function",
-				"match": "\\b(value|name|start_hp|start_mp|aggressive|technique|intelligent|speed|resistance|stamina|id|state|wait|index|pic|x|y|dvx|dvy|dvz|hitTaunt|hitJump|hitDefense|hitAttack|hitJumpDefense|hitDefensePower|hitDefenseAttack|kind|z|w|h|zwidth|wallCheck|holdForwardAfter)\\b"
+				"match": "\\b(value|name|start_hp|start_mp|aggressive|technique|intelligent|speed|resistance|stamina|id|state|wait|index|pic|x|y|dvx|dvy|dvz|hitTaunt|hitJump|hitDefense|hitAttack|hitJumpDefense|hitDefensePower|hitDefenseAttack|kind|z|w|h|zwidth|wallCheck|holdForwardAfter|hitPower|holdDefenseAfter|hold_defense_after|hold_power_after)\\b"
 			}]
 		},
 		"strings": {

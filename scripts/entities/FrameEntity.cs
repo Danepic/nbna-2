@@ -29,6 +29,8 @@ public class FrameEntity
 	public Nullable<int> hitDefensePower;
 	public Nullable<int> hitDefenseAttack;
 	public Nullable<int> holdForwardAfter;
+	public Nullable<int> holdDefenseAfter;
+	public Nullable<int> holdPowerAfter;
 
 	public BdyKindEnum kind;
 	public float x_body;

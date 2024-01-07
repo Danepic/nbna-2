@@ -116,6 +116,10 @@ public static class GetFramesFromDataFile
                 if (holdForwardAfter != null)
                     currentFrameToMap.holdForwardAfter = int.Parse(holdForwardAfter);
 
+                string holdDefenseAfter = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "holdDefenseAfter");
+                if (holdDefenseAfter != null)
+                    currentFrameToMap.holdDefenseAfter = int.Parse(holdDefenseAfter);
+
                 continue;
             }
 

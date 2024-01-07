@@ -11,6 +11,8 @@ public partial class CharProcess : ObjProcess
 	[Export]
 	private bool startFacingRight = true;
 
+	private bool skipStateFrameChange = false;
+
 	private float RUNNING_COUNT = 4f;
 	private float SIDE_DASH_COUNT = 4f;
 
@@ -71,31 +73,17 @@ public partial class CharProcess : ObjProcess
 		//Input
 		InputHandle();
 
-		//PassiveActions
-		base.useCustomNextId = PassiveActionHandle();
-
-		//Actions
-		if (!base.useCustomNextId)
-		{
-			ActionHandle();
-		}
+		GD.Print(frameHelper.holdDefenseAfter + " | " + frameHelper.holdPowerAfter);
 
 		//State
 		StateHandle();
 
+		//Actions
+		ActionHandle();
+
 		//Physics
 		//Opoint
 		//Audio
-	}
-
-	private bool PassiveActionHandle()
-	{
-		if (currentFrame.holdForwardAfter != null && frameHelper.holdForwardAfter)
-		{
-			base.nextFrameId = currentFrame.holdForwardAfter.Value;
-			return true;
-		}
-		return false;
 	}
 
 	private void CanFlip(bool hitLeft, bool hitRight)
@@ -148,7 +136,10 @@ public partial class CharProcess : ObjProcess
 			case StateFrameEnum.SIDE_DASH:
 			case StateFrameEnum.JUMP_DASH:
 			case StateFrameEnum.ROWING:
+				break;
 			case StateFrameEnum.DEFEND:
+				CanHoldDefenseAfter();
+				break;
 			case StateFrameEnum.HIT_DEFEND:
 			case StateFrameEnum.JUMP_DEFEND:
 			case StateFrameEnum.HIT_JUMP_DEFEND:
@@ -169,6 +160,7 @@ public partial class CharProcess : ObjProcess
 			case StateFrameEnum.SLOW:
 			case StateFrameEnum.CONFUSE:
 			case StateFrameEnum.PARALYZED:
+				break;
 			case StateFrameEnum.STOP_RUNNING:
 				runningLeftCounter.Stop();
 				frameHelper.runningLeftEnable = false;
@@ -182,46 +174,62 @@ public partial class CharProcess : ObjProcess
 			case StateFrameEnum.TELEPORT_NEAR_ALLY:
 			case StateFrameEnum.TELEPORT_MOST_DISTANT_ALLY:
 			case StateFrameEnum.TELEPORT_MOST_DISTANT_ENEMY:
+			case StateFrameEnum.HOLD_DEFENSE_AFTER:
+				CanHoldDefenseAfter();
+				break;
+			case StateFrameEnum.HOLD_FORWARD_AFTER:
+				CanHoldForwardAfter();
+				break;
+			case StateFrameEnum.CHARGE:
+				CanHoldPowerAfter();
+				CanHoldDefenseAfter();
 				break;
 		}
 	}
 
 	private void ActionHandle()
 	{
-		if (frameHelper.hitDefense)
+		if (frameHelper.hitDefense && currentFrame.hitDefense.HasValue)
 		{
 			ChangeFrame(currentFrame.hitDefense);
 			frameHelper.hitDefense = false;
 			return;
 		}
-		if (frameHelper.hitJump)
+		if (frameHelper.hitJump && currentFrame.hitJump.HasValue)
 		{
 			ChangeFrame(currentFrame.hitJump);
 			frameHelper.hitJump = false;
 			return;
 		}
-		if (frameHelper.hitAttack)
+		if (frameHelper.hitAttack && currentFrame.hitAttack.HasValue)
 		{
 			ChangeFrame(currentFrame.hitAttack);
 			frameHelper.hitAttack = false;
 			return;
 		}
-		if (frameHelper.hitPower)
+		if (frameHelper.hitPower && currentFrame.hitPower.HasValue)
 		{
 			ChangeFrame(currentFrame.hitPower);
 			frameHelper.hitPower = false;
 			return;
 		}
-		if (frameHelper.hitSuperPower)
+		if (frameHelper.hitSuperPower && currentFrame.hitSuperPower.HasValue)
 		{
 			ChangeFrame(currentFrame.hitSuperPower);
 			frameHelper.hitSuperPower = false;
 			return;
 		}
-		if (frameHelper.hitTaunt)
+		if (frameHelper.hitTaunt && currentFrame.hitTaunt.HasValue)
 		{
 			ChangeFrame(currentFrame.hitTaunt);
 			frameHelper.hitTaunt = false;
+			return;
+		}
+		if (frameHelper.holdDefenseAfter && frameHelper.holdPowerAfter && currentFrame.hitDefensePower.HasValue)
+		{
+			ChangeFrame(currentFrame.hitDefensePower);
+			frameHelper.holdDefenseAfter = false;
+			frameHelper.holdPowerAfter = false;
 			return;
 		}
 	}
@@ -252,20 +260,24 @@ public partial class CharProcess : ObjProcess
 		if (Input.IsActionJustPressed(ActionEnum.DEFENSE.ToString().ToLower()))
 		{
 			frameHelper.hitDefense = true;
+			frameHelper.holdDefenseAfter = true;
 		}
 		else if (Input.IsActionJustReleased(ActionEnum.DEFENSE.ToString().ToLower()))
 		{
 			frameHelper.hitDefense = false;
+			frameHelper.holdDefenseAfter = false;
 		}
 
 		//power
 		if (Input.IsActionJustPressed(ActionEnum.POWER.ToString().ToLower()))
 		{
 			frameHelper.hitPower = true;
+			frameHelper.holdPowerAfter = true;
 		}
 		else if (Input.IsActionJustReleased(ActionEnum.POWER.ToString().ToLower()))
 		{
 			frameHelper.hitPower = false;
+			frameHelper.holdPowerAfter = false;
 		}
 
 		//super power
@@ -431,6 +443,30 @@ public partial class CharProcess : ObjProcess
 		{
 			ChangeFrame(StateHelper.WALKING);
 			CanFlip(frameHelper.hitLeft, frameHelper.hitRight);
+		}
+	}
+
+	private void CanHoldDefenseAfter()
+	{
+		if (frameHelper.holdDefenseAfter && currentFrame.holdDefenseAfter.HasValue)
+		{
+			ChangeFrame(currentFrame.holdDefenseAfter);
+		}
+	}
+
+	private void CanHoldPowerAfter()
+	{
+		if (frameHelper.holdPowerAfter && currentFrame.holdPowerAfter.HasValue)
+		{
+			ChangeFrame(currentFrame.holdPowerAfter);
+		}
+	}
+
+	private void CanHoldForwardAfter()
+	{
+		if (frameHelper.holdForwardAfter && currentFrame.holdForwardAfter.HasValue)
+		{
+			ChangeFrame(currentFrame.holdForwardAfter);
 		}
 	}
 
