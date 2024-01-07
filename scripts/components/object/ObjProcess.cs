@@ -90,7 +90,7 @@ public partial class ObjProcess : Node
 		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 
-		GD.Print("currentFrame.textureIndex: " + currentFrame.textureIndex);
+		//GD.Print("currentFrame.textureIndex: " + currentFrame.textureIndex);
 		shadowSprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
 		shadowSprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
 

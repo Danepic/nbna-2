@@ -70,16 +70,15 @@ public partial class CharProcess : ObjProcess
 
 	public override void _Process(double delta)
 	{
+		GD.Print(currentFrame.id);
 		//Input
 		InputHandle();
 
-		GD.Print(frameHelper.holdDefenseAfter + " | " + frameHelper.holdPowerAfter);
+		//Actions
+		ActionHandle();
 
 		//State
 		StateHandle();
-
-		//Actions
-		ActionHandle();
 
 		//Physics
 		//Opoint
@@ -139,6 +138,7 @@ public partial class CharProcess : ObjProcess
 				break;
 			case StateFrameEnum.DEFEND:
 				CanHoldDefenseAfter();
+				CanCharge();
 				break;
 			case StateFrameEnum.HIT_DEFEND:
 			case StateFrameEnum.JUMP_DEFEND:
@@ -182,7 +182,6 @@ public partial class CharProcess : ObjProcess
 				break;
 			case StateFrameEnum.CHARGE:
 				CanHoldPowerAfter();
-				CanHoldDefenseAfter();
 				break;
 		}
 	}
@@ -223,13 +222,6 @@ public partial class CharProcess : ObjProcess
 		{
 			ChangeFrame(currentFrame.hitTaunt);
 			frameHelper.hitTaunt = false;
-			return;
-		}
-		if (frameHelper.holdDefenseAfter && frameHelper.holdPowerAfter && currentFrame.hitDefensePower.HasValue)
-		{
-			ChangeFrame(currentFrame.hitDefensePower);
-			frameHelper.holdDefenseAfter = false;
-			frameHelper.holdPowerAfter = false;
 			return;
 		}
 	}
@@ -454,10 +446,20 @@ public partial class CharProcess : ObjProcess
 		}
 	}
 
+	private void CanCharge()
+	{
+		if (frameHelper.hitPower && currentFrame.hitPower.HasValue)
+		{
+			frameHelper.hitPower = false;
+			ChangeFrame(currentFrame.hitPower);
+		}
+	}
+
 	private void CanHoldPowerAfter()
 	{
 		if (frameHelper.holdPowerAfter && currentFrame.holdPowerAfter.HasValue)
 		{
+			frameHelper.hitPower = false;
 			ChangeFrame(currentFrame.holdPowerAfter);
 		}
 	}

@@ -100,17 +100,9 @@ public static class GetFramesFromDataFile
                 if (hitAttack != null)
                     currentFrameToMap.hitAttack = int.Parse(hitAttack);
 
-                string hitJumpDefense = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitJumpDefense");
-                if (hitJumpDefense != null)
-                    currentFrameToMap.hitJumpDefense = int.Parse(hitJumpDefense);
-
-                string hitDefensePower = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitDefensePower");
-                if (hitDefensePower != null)
-                    currentFrameToMap.hitDefensePower = int.Parse(hitDefensePower);
-
-                string hitDefenseAttack = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitDefenseAttack");
-                if (hitDefenseAttack != null)
-                    currentFrameToMap.hitDefenseAttack = int.Parse(hitDefenseAttack);
+                string hitPower = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitPower");
+                if (hitPower != null)
+                    currentFrameToMap.hitPower = int.Parse(hitPower);
 
                 string holdForwardAfter = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "holdForwardAfter");
                 if (holdForwardAfter != null)
@@ -119,6 +111,10 @@ public static class GetFramesFromDataFile
                 string holdDefenseAfter = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "holdDefenseAfter");
                 if (holdDefenseAfter != null)
                     currentFrameToMap.holdDefenseAfter = int.Parse(holdDefenseAfter);
+
+                string holdPowerAfter = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "holdPowerAfter");
+                if (holdPowerAfter != null)
+                    currentFrameToMap.holdPowerAfter = int.Parse(holdPowerAfter);
 
                 continue;
             }

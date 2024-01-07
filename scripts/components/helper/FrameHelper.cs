@@ -62,6 +62,9 @@ public class FrameHelper
 	public bool hitLeft;
 	public bool hitRight;
 
+	//Hit mobile/CPU TODO
+	public bool hitCharge;
+
 	//Hit State
 	public bool inMovement;
 
