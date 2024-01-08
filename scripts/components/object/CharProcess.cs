@@ -80,30 +80,36 @@ public partial class CharProcess : ObjProcess
 		//State
 		StateHandle();
 
+		//Extern Actions
+		ExternActionHandle();
+
 		//Physics
+		ApplyPhisics();
+
 		//Opoint
+		ExecOppoint();
+
 		//Audio
+		ExecAudio();
 	}
 
-	private void CanFlip(bool hitLeft, bool hitRight)
-	{
-		if (hitLeft && hitRight)
-		{
-			return;
-		}
+    private void ExecAudio()
+    {
+    }
 
-		if (hitLeft)
-		{
-			sprite3D.FlipH = true;
-			shadowSprite3D.FlipH = true;
-			frameHelper.facingRight = false;
-		}
-		else if (hitRight)
-		{
-			sprite3D.FlipH = false;
-			shadowSprite3D.FlipH = false;
-			frameHelper.facingRight = true;
-		}
+
+    private void ExecOppoint()
+    {
+    }
+
+
+    private void ApplyPhisics()
+    {
+    }
+
+    private void ExternActionHandle()
+	{
+
 	}
 
 	private void StateHandle()
@@ -127,7 +133,11 @@ public partial class CharProcess : ObjProcess
 				break;
 			case StateFrameEnum.ATTACKS:
 			case StateFrameEnum.JUMPING:
+				CanJumpDash();
+				break;
 			case StateFrameEnum.JUMPING_FALLING:
+				CanJumpDash();
+				break;
 			case StateFrameEnum.JUMPING_CHARGE:
 			case StateFrameEnum.DOUBLE_JUMPING_FALLING:
 			case StateFrameEnum.DASH_JUMPING:
@@ -142,6 +152,8 @@ public partial class CharProcess : ObjProcess
 				break;
 			case StateFrameEnum.HIT_DEFEND:
 			case StateFrameEnum.JUMP_DEFEND:
+				CanHoldDefenseAfter();
+				break;
 			case StateFrameEnum.HIT_JUMP_DEFEND:
 			case StateFrameEnum.BROKEN_DEFEND:
 			case StateFrameEnum.CATCHING:
@@ -421,6 +433,27 @@ public partial class CharProcess : ObjProcess
 		}
 	}
 
+	private void CanFlip(bool hitLeft, bool hitRight)
+	{
+		if (hitLeft && hitRight)
+		{
+			return;
+		}
+
+		if (hitLeft)
+		{
+			sprite3D.FlipH = true;
+			shadowSprite3D.FlipH = true;
+			frameHelper.facingRight = false;
+		}
+		else if (hitRight)
+		{
+			sprite3D.FlipH = false;
+			shadowSprite3D.FlipH = false;
+			frameHelper.facingRight = true;
+		}
+	}
+
 	private void CanStanding()
 	{
 		if (!frameHelper.inMovement)
@@ -493,6 +526,31 @@ public partial class CharProcess : ObjProcess
 			runningLeftCounter.Stop();
 			runningRightCounter.Stop();
 			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
+			return;
+		}
+	}
+
+	public void CanJumpDash()
+	{
+		// Run Right
+		if (frameHelper.runningRightEnable && frameHelper.hitRight)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			runningLeftCounter.Stop();
+			runningRightCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.JUMP_DASH);
+			return;
+		}
+
+		// Run Left
+		if (frameHelper.runningLeftEnable && frameHelper.hitLeft)
+		{
+			frameHelper.runningRightEnable = false;
+			frameHelper.runningLeftEnable = false;
+			runningLeftCounter.Stop();
+			runningRightCounter.Stop();
+			ChangeFrame(CharStartFrameEnum.JUMP_DASH);
 			return;
 		}
 	}

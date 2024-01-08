@@ -116,6 +116,10 @@ public static class GetFramesFromDataFile
                 if (holdPowerAfter != null)
                     currentFrameToMap.holdPowerAfter = int.Parse(holdPowerAfter);
 
+                string hitGround = GetValueFromKeyInDataFile.Apply(trimLine, "hit", "hitGround");
+                if (hitGround != null)
+                    currentFrameToMap.hitGround = int.Parse(hitGround);
+
                 continue;
             }
 

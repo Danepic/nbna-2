@@ -33,6 +33,7 @@ public class FrameEntity
 	public Nullable<int> holdForwardAfter;
 	public Nullable<int> holdDefenseAfter;
 	public Nullable<int> holdPowerAfter;
+	public Nullable<int> hitGround;
 
 	public BdyKindEnum kind;
 	public float x_body;
