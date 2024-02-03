@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://drkpgivdd48ew"]
+[gd_scene load_steps=6 format=3 uid="uid://drkpgivdd48ew"]
 
 [ext_resource type="Script" path="res://scripts/components/object/CharProcess.cs" id="1_tlqyk"]
 [ext_resource type="Texture2D" uid="uid://dj5owpdfnqiuh" path="res://chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite.png" id="2_ce7yp"]
@@ -6,8 +6,15 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_g58d2"]
 size = Vector3(0.274, 0.622962, 0.001)
 
+[sub_resource type="BoxMesh" id="BoxMesh_buf0u"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ll4db"]
+transparency = 1
+albedo_color = Color(0, 0.454902, 0.92549, 0.8)
+
 [node name="player" type="Node3D"]
 process_mode = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.833964, 0)
 script = ExtResource("1_tlqyk")
 dataFile = "res://chars/naruto/ns-oodama-rasengan/obj.dat"
 spritePath = "res://chars/naruto/ns-oodama-rasengan/sprites"
@@ -15,21 +22,26 @@ spritePath = "res://chars/naruto/ns-oodama-rasengan/sprites"
 [node name="body" type="CharacterBody3D" parent="."]
 
 [node name="hurtbox" type="CollisionShape3D" parent="body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31284, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00455642, 0.31284, 0)
 shape = SubResource("BoxShape3D_g58d2")
+
+[node name="hurtbox_mesh" type="MeshInstance3D" parent="body"]
+transform = Transform3D(0.375, 0, 0, 0, 0.61, 0, 0, 0, 0.22, 0, 0, 0)
+mesh = SubResource("BoxMesh_buf0u")
+surface_material_override/0 = SubResource("StandardMaterial3D_ll4db")
 
 [node name="hitbox" type="CollisionShape3D" parent="body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31284, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00455666, 0.31284, 0)
 shape = SubResource("BoxShape3D_g58d2")
 
-[node name="sprite" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00243095, 0)
+[node name="sprite" type="Sprite3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00243098, 0)
 centered = false
 texture = ExtResource("2_ce7yp")
 region_enabled = true
 region_rect = Rect2(0, 0, 256, 256)
 
-[node name="shadow_sprite" type="Sprite3D" parent="."]
+[node name="shadow_sprite" type="Sprite3D" parent="body"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.56332, 0)
 centered = false
 flip_v = true

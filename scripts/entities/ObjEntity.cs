@@ -14,4 +14,9 @@ public class ObjEntity
     public Dictionary<int, SpriteAtlasEntity> sprites;
 
     public Dictionary<int, FrameEntity> frames;
+
+    public override string ToString()
+    {
+        return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+    }
 }

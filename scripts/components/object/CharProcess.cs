@@ -24,12 +24,15 @@ public partial class CharProcess : ObjProcess
 
 	protected Timer sideDashDownCounter;
 
+	protected Vector3 GRAVITY = Vector3.Down * 10;
+	protected Vector3 velocity = Vector3.Zero;
+
 	public override void _Ready()
 	{
-		sprite3D = GetNode<Sprite3D>("sprite");
-		shadowSprite3D = GetNode<Sprite3D>("shadow_sprite");
-		waitTimer = GetNode<Timer>("wait");
 		characterBody3D = GetNode<CharacterBody3D>("body");
+		sprite3D = characterBody3D.GetNode<Sprite3D>("sprite");
+		shadowSprite3D = characterBody3D.GetNode<Sprite3D>("shadow_sprite");
+		waitTimer = GetNode<Timer>("wait");
 		runningLeftCounter = GetNode<Timer>("runningLeftCounter");
 		runningRightCounter = GetNode<Timer>("runningRightCounter");
 		sideDashUpCounter = GetNode<Timer>("sideDashUpCounter");
@@ -70,9 +73,10 @@ public partial class CharProcess : ObjProcess
 
 	public override void _Process(double delta)
 	{
-		GD.Print(currentFrame.id);
-		//Input
-		InputHandle();
+		GD.Print(velocity);
+
+		//Input State Handle
+		InputStateHandle();
 
 		//Actions
 		ActionHandle();
@@ -83,9 +87,6 @@ public partial class CharProcess : ObjProcess
 		//Extern Actions
 		ExternActionHandle();
 
-		//Physics
-		ApplyPhisics();
-
 		//Opoint
 		ExecOppoint();
 
@@ -93,21 +94,279 @@ public partial class CharProcess : ObjProcess
 		ExecAudio();
 	}
 
-    private void ExecAudio()
-    {
-    }
+	public override void _PhysicsProcess(double delta)
+	{
+		//GD.Print("R:" + frameHelper.hitRight + "|L:" + frameHelper.hitLeft + "|U:" + frameHelper.hitUp + "|D:" + frameHelper.hitDown);
+		StateFrameEnum state = currentFrame.state;
+		switch (state)
+		{
+			case StateFrameEnum.STANDING:
+				velocity = Vector3.Zero;
+				break;
+			case StateFrameEnum.WALKING:
+				if (frameHelper.hitRight && !frameHelper.hitLeft)
+				{
+					velocity.X = currentFrame.dvx / DV_VALUE_TO_DIVIDE;
+				}
+				else if (frameHelper.hitLeft && !frameHelper.hitRight)
+				{
+					velocity.X = -currentFrame.dvx / DV_VALUE_TO_DIVIDE;
+				}
+				else
+				{
+					velocity.X = 0;
+				}
+
+				if (frameHelper.hitUp && !frameHelper.hitDown)
+				{
+					velocity.Z = currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+				}
+				else if (frameHelper.hitDown && !frameHelper.hitUp)
+				{
+					velocity.Z = -currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+				}
+				else
+				{
+					velocity.Z = 0;
+				}
+				break;
+			case StateFrameEnum.RUNNING:
+				if (frameHelper.facingRight)
+				{
+					velocity.X = objEntity.stats.speed / DV_VALUE_TO_DIVIDE;
+
+				}
+				else
+				{
+					velocity.X = -objEntity.stats.speed / DV_VALUE_TO_DIVIDE;
+				}
+
+				if (frameHelper.hitUp && !frameHelper.hitDown)
+				{
+					velocity.Z = currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+				}
+				else if (frameHelper.hitDown && !frameHelper.hitUp)
+				{
+					velocity.Z = -currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+				}
+				else
+				{
+					velocity.Z = 0;
+				}
+				break;
+			default:
+				if (currentFrame.dvx != 0)
+				{
+					if (currentFrame.dvx.Equals(DV_VALUE_TO_STOP))
+					{
+						velocity.X = 0;
+					}
+					else
+					{
+						if (frameHelper.facingRight)
+						{
+							velocity.X = currentFrame.dvx / DV_VALUE_TO_DIVIDE;
+
+						}
+						else
+						{
+							velocity.X = -currentFrame.dvx / DV_VALUE_TO_DIVIDE;
+						}
+					}
+				}
+
+				if (currentFrame.dvy != 0)
+				{
+					if (currentFrame.dvy == DV_VALUE_TO_STOP)
+					{
+						velocity.Y = 0;
+					}
+					else
+					{
+						velocity.Y = currentFrame.dvy / DV_VALUE_TO_DIVIDE;
+					}
+				}
+
+				if (currentFrame.dvz != 0)
+				{
+					if (currentFrame.dvz == DV_VALUE_TO_STOP)
+					{
+						velocity.Z = 0;
+					}
+					else
+					{
+						velocity.Z = currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+					}
+				}
+
+				break;
+		}
+
+		//Gravity
+		// velocity += GRAVITY * (float)delta;
+		var collision = characterBody3D.MoveAndCollide(velocity);
+
+		if (collision != null)
+		{
+			GD.Print("I collided with ", ((Node)collision.GetCollider()).Name);
+		}
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		//attack
+		if (@event.IsActionPressed(ActionEnum.ATTACK.ToString().ToLower()))
+		{
+			frameHelper.hitAttack = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.ATTACK.ToString().ToLower()))
+		{
+			frameHelper.hitAttack = false;
+		}
+
+		//jump
+		if (@event.IsActionPressed(ActionEnum.JUMP.ToString().ToLower()))
+		{
+			frameHelper.hitJump = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.JUMP.ToString().ToLower()))
+		{
+			frameHelper.hitJump = false;
+		}
+
+		//defense
+		if (@event.IsActionPressed(ActionEnum.DEFENSE.ToString().ToLower()))
+		{
+			frameHelper.hitDefense = true;
+			frameHelper.holdDefenseAfter = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.DEFENSE.ToString().ToLower()))
+		{
+			frameHelper.hitDefense = false;
+			frameHelper.holdDefenseAfter = false;
+		}
+
+		//power
+		if (@event.IsActionPressed(ActionEnum.POWER.ToString().ToLower()))
+		{
+			frameHelper.hitPower = true;
+			frameHelper.holdPowerAfter = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.POWER.ToString().ToLower()))
+		{
+			frameHelper.hitPower = false;
+			frameHelper.holdPowerAfter = false;
+		}
+
+		//super power
+		if (@event.IsActionPressed(ActionEnum.SUPER_POWER.ToString().ToLower()))
+		{
+			frameHelper.hitSuperPower = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.SUPER_POWER.ToString().ToLower()))
+		{
+			frameHelper.hitSuperPower = false;
+		}
+
+		//taunt
+		if (@event.IsActionPressed(ActionEnum.TAUNT.ToString().ToLower()))
+		{
+			frameHelper.hitTaunt = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.TAUNT.ToString().ToLower()))
+		{
+			frameHelper.hitTaunt = false;
+		}
+
+		//left
+		if (@event.IsActionPressed(ActionEnum.LEFT.ToString().ToLower()))
+		{
+			frameHelper.hitLeft = true;
+			frameHelper.holdForwardAfter = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.LEFT.ToString().ToLower()))
+		{
+			frameHelper.hitLeft = false;
+			frameHelper.holdForwardAfter = false;
+			if (!frameHelper.countLeftEnable && !frameHelper.facingRight)
+			{
+				frameHelper.countLeftEnable = true;
+				frameHelper.countRightEnable = false;
+				return;
+			}
+		}
+
+		//right
+		if (@event.IsActionPressed(ActionEnum.RIGHT.ToString().ToLower()))
+		{
+			frameHelper.hitRight = true;
+			frameHelper.holdForwardAfter = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.RIGHT.ToString().ToLower()))
+		{
+			frameHelper.hitRight = false;
+			frameHelper.holdForwardAfter = false;
+			if (!frameHelper.countRightEnable && frameHelper.facingRight)
+			{
+				frameHelper.countRightEnable = true;
+				frameHelper.countLeftEnable = false;
+			}
+		}
+
+		//up
+		if (@event.IsActionPressed(ActionEnum.UP.ToString().ToLower()))
+		{
+			frameHelper.hitUp = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.UP.ToString().ToLower()))
+		{
+			frameHelper.hitUp = false;
+			if (!frameHelper.countSideDashUpEnable)
+			{
+				frameHelper.countSideDashUpEnable = true;
+				frameHelper.countSideDashDownEnable = false;
+				frameHelper.facingUp = true;
+			}
+		}
+
+		//down
+		if (@event.IsActionPressed(ActionEnum.DOWN.ToString().ToLower()))
+		{
+			frameHelper.hitDown = true;
+		}
+		else if (@event.IsActionReleased(ActionEnum.DOWN.ToString().ToLower()))
+		{
+			frameHelper.hitDown = false;
+			if (!frameHelper.countSideDashDownEnable)
+			{
+				frameHelper.countSideDashDownEnable = true;
+				frameHelper.countSideDashUpEnable = false;
+				frameHelper.facingUp = false;
+			}
+		}
+
+		InputStateHandle();
+
+		//GD.Print($"ATK: {frameHelper.hitAttack} - JUMP: {frameHelper.hitJump} - DEFEND: {frameHelper.hitDefense} - SUPER: {frameHelper.hitPower} - SUPER_POWER: {frameHelper.hitSuperPower} - TAUNT: {frameHelper.hitTaunt}");
+		// GD.Print($"UP: {frameHelper.hitUp} - DOWN: {frameHelper.hitDown} - LEFT: {frameHelper.hitLeft} - RIGHT: {frameHelper.hitRight}");
+	}
+
+	private void ExecAudio()
+	{
+	}
 
 
-    private void ExecOppoint()
-    {
-    }
+	private void ExecOppoint()
+	{
+	}
 
 
-    private void ApplyPhisics()
-    {
-    }
+	private void ApplyPhisics()
+	{
 
-    private void ExternActionHandle()
+	}
+
+	private void ExternActionHandle()
 	{
 
 	}
@@ -126,7 +385,6 @@ public partial class CharProcess : ObjProcess
 				CanFlip(frameHelper.hitLeft, frameHelper.hitRight);
 				CanStanding();
 				CanRunning();
-				CanSideDash();
 				break;
 			case StateFrameEnum.RUNNING:
 				CanStopRunning();
@@ -238,149 +496,6 @@ public partial class CharProcess : ObjProcess
 		}
 	}
 
-	private void InputHandle()
-	{
-		//attack
-		if (Input.IsActionJustPressed(ActionEnum.ATTACK.ToString().ToLower()))
-		{
-			frameHelper.hitAttack = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.ATTACK.ToString().ToLower()))
-		{
-			frameHelper.hitAttack = false;
-		}
-
-		//jump
-		if (Input.IsActionJustPressed(ActionEnum.JUMP.ToString().ToLower()))
-		{
-			frameHelper.hitJump = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.JUMP.ToString().ToLower()))
-		{
-			frameHelper.hitJump = false;
-		}
-
-		//defense
-		if (Input.IsActionJustPressed(ActionEnum.DEFENSE.ToString().ToLower()))
-		{
-			frameHelper.hitDefense = true;
-			frameHelper.holdDefenseAfter = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.DEFENSE.ToString().ToLower()))
-		{
-			frameHelper.hitDefense = false;
-			frameHelper.holdDefenseAfter = false;
-		}
-
-		//power
-		if (Input.IsActionJustPressed(ActionEnum.POWER.ToString().ToLower()))
-		{
-			frameHelper.hitPower = true;
-			frameHelper.holdPowerAfter = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.POWER.ToString().ToLower()))
-		{
-			frameHelper.hitPower = false;
-			frameHelper.holdPowerAfter = false;
-		}
-
-		//super power
-		if (Input.IsActionJustPressed(ActionEnum.SUPER_POWER.ToString().ToLower()))
-		{
-			frameHelper.hitSuperPower = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.SUPER_POWER.ToString().ToLower()))
-		{
-			frameHelper.hitSuperPower = false;
-		}
-
-		//taunt
-		if (Input.IsActionJustPressed(ActionEnum.TAUNT.ToString().ToLower()))
-		{
-			frameHelper.hitTaunt = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.TAUNT.ToString().ToLower()))
-		{
-			frameHelper.hitTaunt = false;
-		}
-
-		//left
-		if (Input.IsActionPressed(ActionEnum.LEFT.ToString().ToLower()))
-		{
-			frameHelper.hitLeft = true;
-			frameHelper.holdForwardAfter = true;
-			frameHelper.inMovement = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.LEFT.ToString().ToLower()))
-		{
-			frameHelper.hitLeft = false;
-			frameHelper.holdForwardAfter = false;
-			if (!frameHelper.countLeftEnable && !frameHelper.facingRight)
-			{
-				frameHelper.countLeftEnable = true;
-				frameHelper.countRightEnable = false;
-				return;
-			}
-		}
-
-		//right
-		if (Input.IsActionPressed(ActionEnum.RIGHT.ToString().ToLower()))
-		{
-			frameHelper.hitRight = true;
-			frameHelper.holdForwardAfter = true;
-			frameHelper.inMovement = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.RIGHT.ToString().ToLower()))
-		{
-			frameHelper.hitRight = false;
-			frameHelper.holdForwardAfter = false;
-			if (!frameHelper.countRightEnable && frameHelper.facingRight)
-			{
-				frameHelper.countRightEnable = true;
-				frameHelper.countLeftEnable = false;
-			}
-		}
-
-		//up
-		if (Input.IsActionPressed(ActionEnum.UP.ToString().ToLower()))
-		{
-			frameHelper.hitUp = true;
-			frameHelper.inMovement = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.UP.ToString().ToLower()))
-		{
-			frameHelper.hitUp = false;
-			if (!frameHelper.countSideDashUpEnable)
-			{
-				frameHelper.countSideDashUpEnable = true;
-				frameHelper.countSideDashDownEnable = false;
-				frameHelper.facingUp = true;
-			}
-		}
-
-		//down
-		if (Input.IsActionPressed(ActionEnum.DOWN.ToString().ToLower()))
-		{
-			frameHelper.hitDown = true;
-			frameHelper.inMovement = true;
-		}
-		else if (Input.IsActionJustReleased(ActionEnum.DOWN.ToString().ToLower()))
-		{
-			frameHelper.hitDown = false;
-			if (!frameHelper.countSideDashDownEnable)
-			{
-				frameHelper.countSideDashDownEnable = true;
-				frameHelper.countSideDashUpEnable = false;
-				frameHelper.facingUp = false;
-			}
-		}
-
-		InputStateHandle();
-
-		//GD.Print($"ATK: {frameHelper.hitAttack} - JUMP: {frameHelper.hitJump} - DEFEND: {frameHelper.hitDefense} - SUPER: {frameHelper.hitPower} - SUPER_POWER: {frameHelper.hitSuperPower} - TAUNT: {frameHelper.hitTaunt}");
-		// GD.Print($"UP: {frameHelper.hitUp} - DOWN: {frameHelper.hitDown} - LEFT: {frameHelper.hitLeft} - RIGHT: {frameHelper.hitRight}");
-	}
-
 	private void InputStateHandle()
 	{
 		if (frameHelper.inMovement)
@@ -400,16 +515,20 @@ public partial class CharProcess : ObjProcess
 		if (frameHelper.countRightEnable && !frameHelper.runningRightEnable)
 		{
 			frameHelper.runningRightEnable = true;
+			frameHelper.runningLeftEnable = false;
 			runningRightCounter.WaitTime = RUNNING_COUNT / 30;
 			runningRightCounter.Start();
+
 			runningLeftCounter.Stop();
 		}
 
 		if (frameHelper.countLeftEnable && !frameHelper.runningLeftEnable)
 		{
 			frameHelper.runningLeftEnable = true;
+			frameHelper.runningRightEnable = false;
 			runningLeftCounter.WaitTime = RUNNING_COUNT / 30;
 			runningLeftCounter.Start();
+
 			runningRightCounter.Stop();
 		}
 	}
@@ -419,16 +538,20 @@ public partial class CharProcess : ObjProcess
 		if (frameHelper.countSideDashUpEnable && !frameHelper.sideDashUpEnable)
 		{
 			frameHelper.sideDashUpEnable = true;
+			frameHelper.sideDashDownEnable = false;
 			sideDashUpCounter.WaitTime = SIDE_DASH_COUNT / 30;
 			sideDashUpCounter.Start();
+
 			sideDashDownCounter.Stop();
 		}
 
 		if (frameHelper.countSideDashDownEnable && !frameHelper.sideDashDownEnable)
 		{
 			frameHelper.sideDashDownEnable = true;
+			frameHelper.sideDashUpEnable = false;
 			sideDashDownCounter.WaitTime = SIDE_DASH_COUNT / 30;
 			sideDashDownCounter.Start();
+
 			sideDashUpCounter.Stop();
 		}
 	}
@@ -456,18 +579,29 @@ public partial class CharProcess : ObjProcess
 
 	private void CanStanding()
 	{
-		if (!frameHelper.inMovement)
+		if (!frameHelper.hitLeft && !frameHelper.hitRight && !frameHelper.hitUp && !frameHelper.hitDown)
 		{
 			ChangeFrame(StateHelper.STANDING);
+			frameHelper.inMovement = false;
+		}
+		else if ((frameHelper.hitLeft && frameHelper.hitRight) || (frameHelper.hitUp && frameHelper.hitDown))
+		{
+			ChangeFrame(StateHelper.STANDING);
+			frameHelper.inMovement = false;
 		}
 	}
 
 	private void CanWalking()
 	{
-		if (frameHelper.inMovement)
+		if ((frameHelper.hitLeft && frameHelper.hitRight) || (frameHelper.hitUp && frameHelper.hitDown))
+		{
+			return;
+		}
+		else if (frameHelper.hitLeft || frameHelper.hitRight || frameHelper.hitUp || frameHelper.hitDown)
 		{
 			ChangeFrame(StateHelper.WALKING);
 			CanFlip(frameHelper.hitLeft, frameHelper.hitRight);
+			frameHelper.inMovement = true;
 		}
 	}
 
@@ -514,6 +648,7 @@ public partial class CharProcess : ObjProcess
 			frameHelper.runningLeftEnable = false;
 			runningLeftCounter.Stop();
 			runningRightCounter.Stop();
+			frameHelper.inMovement = true;
 			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
 			return;
 		}
@@ -525,6 +660,7 @@ public partial class CharProcess : ObjProcess
 			frameHelper.runningLeftEnable = false;
 			runningLeftCounter.Stop();
 			runningRightCounter.Stop();
+			frameHelper.inMovement = true;
 			ChangeFrame(CharStartFrameEnum.SIMPLE_DASH);
 			return;
 		}

@@ -28,6 +28,10 @@ public partial class ObjProcess : Node
 
 	protected FrameHelper frameHelper;
 
+	protected float DV_VALUE_TO_DIVIDE = 100;
+
+	protected float DV_VALUE_TO_STOP = 550;
+
 	public override void _EnterTree()
 	{
 		using DirAccess spriteDir = DirAccess.Open(spritePath);
