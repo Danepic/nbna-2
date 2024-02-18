@@ -1,0 +1,19 @@
+<object>
+id:  1  type: 0  file: chars\naruto_sage\naruto_sage.dat
+<object_end>
+
+<background>
+id: 0    file: bg\sys\0stage\bg.dat
+id: 1    file: bg\sys\shiken1\bg.dat
+id: 2    file: bg\sys\shiken2\bg.dat
+id: 3    file: bg\sys\konoha1\bg.dat
+id: 4    file: bg\sys\konoha2\bg.dat
+id: 5    file: bg\sys\konoha3\bg.dat
+id: 6    file: bg\sys\konoha4\bg.dat
+id: 7    file: bg\sys\konoha5\bg.dat
+id: 8    file: bg\sys\academy1\bg.dat
+id: 9    file: bg\sys\rooftop2\bg.dat
+id: 10    file: bg\sys\rooftop1\bg.dat
+id: 70   file: bg\template\3500\bg.dat
+id: 71   file: bg\template\800\bg.dat
+<background_end>

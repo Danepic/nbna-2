@@ -26,6 +26,7 @@ public partial class CharProcess : ObjProcess
 
 	protected Vector3 GRAVITY = Vector3.Down * 10;
 	protected Vector3 velocity = Vector3.Zero;
+	protected int sideDashDirection = 0;
 
 	public override void _Ready()
 	{
@@ -98,6 +99,7 @@ public partial class CharProcess : ObjProcess
 	{
 		//GD.Print("R:" + frameHelper.hitRight + "|L:" + frameHelper.hitLeft + "|U:" + frameHelper.hitUp + "|D:" + frameHelper.hitDown);
 		StateFrameEnum state = currentFrame.state;
+		velocity = Vector3.Zero;
 		switch (state)
 		{
 			case StateFrameEnum.STANDING:
@@ -152,6 +154,16 @@ public partial class CharProcess : ObjProcess
 				else
 				{
 					velocity.Z = 0;
+				}
+				break;
+			case StateFrameEnum.SIDE_DASH:
+				if (sideDashDirection < 0)
+				{
+					velocity.Z = currentFrame.dvz / DV_VALUE_TO_DIVIDE;
+				}
+				else
+				{
+					velocity.Z = -currentFrame.dvz / DV_VALUE_TO_DIVIDE;
 				}
 				break;
 			default:
@@ -708,6 +720,7 @@ public partial class CharProcess : ObjProcess
 		// Side Dash Up
 		if (frameHelper.sideDashUpEnable && frameHelper.hitUp)
 		{
+			sideDashDirection = 1;
 			frameHelper.sideDashUpEnable = false;
 			frameHelper.sideDashDownEnable = false;
 			sideDashUpCounter.Stop();
@@ -719,6 +732,7 @@ public partial class CharProcess : ObjProcess
 		// Side Dash Down
 		if (frameHelper.sideDashDownEnable && frameHelper.hitDown)
 		{
+			sideDashDirection = -1;
 			frameHelper.sideDashUpEnable = false;
 			frameHelper.sideDashDownEnable = false;
 			sideDashUpCounter.Stop();
@@ -726,6 +740,8 @@ public partial class CharProcess : ObjProcess
 			ChangeFrame(CharStartFrameEnum.SIDE_DASH);
 			return;
 		}
+
+		sideDashDirection = 0;
 	}
 
 	public void OnRunningLeftCounterTimeout()

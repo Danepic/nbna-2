@@ -15,6 +15,10 @@ run/main_scene="res://scenes/battle_sample.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[debug]
+
+file_logging/enable_file_logging=true
+
 [display]
 
 window/stretch/mode="canvas_items"

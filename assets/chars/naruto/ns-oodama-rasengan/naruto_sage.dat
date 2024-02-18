@@ -1,0 +1,31 @@
+<bmp_begin>
+   type: CHARACTER
+   name: Naruto_Uzumaki_(Oodama_Rasengan)
+   file(0-63): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_1.png  w: 255  h: 255  row: 8  col: 8
+   file(64-127): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_2.png  w: 255  h: 255  row: 8  col: 8
+   file(128-191): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_3.png  w: 255  h: 255  row: 8  col: 8
+   file(192-255): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_4.png  w: 255  h: 255  row: 8  col: 8
+   file(256-319): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_5.png  w: 255  h: 255  row: 8  col: 8
+   file(320-383): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_6.png  w: 255  h: 255  row: 8  col: 8
+   file(384-447): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_7.png  w: 255  h: 255  row: 8  col: 8
+   file(448-511): chars\naruto\ns-oodama-rasengan\sprites\Naruto_Sprite_8.png  w: 255  h: 255  row: 8  col: 8
+   start_hp: 1025
+   start_mp: 500
+<bmp_end>
+
+<stats>
+   aggressive: 6  technique: 6  intelligent: 8  speed: 7  resistance: 8  stamina: 10
+<stats_end>
+
+<frame> 0 standing
+   pic: 16  state: 0  wait: 2,5  next: 1  dvx: 0  dvy: 0  centerx: 29  centery: 110  hitTaunt: 190  hitJump: 210  hitDefense: 150  hitAttack: 350
+   bdy:
+      kind: 0  x: 13  y: 31  w: 36  h: 80
+   bdy_end:
+<frame_end>
+<frame> 1 standing
+   pic: 17  state: 0  wait: 2,5  next: 0  dvx: 0  dvy: 0  centerx: 30  centery: 110  hitTaunt: 190  hitJump: 210  hitDefense: 150  hitAttack: 350
+   bdy:
+      kind: 0  x: 15  y: 38  w: 27  h: 71
+   bdy_end:
+<frame_end>

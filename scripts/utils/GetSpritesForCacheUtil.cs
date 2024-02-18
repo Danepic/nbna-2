@@ -35,4 +35,24 @@ public static class GetSpritesForCacheUtil
         }
         return result;
     }
+
+    internal static Dictionary<int, SpriteAtlasEntity> ApplyV2(string bmpContent)
+    {
+        GD.Print(bmpContent);
+        foreach (string line in bmpContent.Split("\n"))
+        {
+            // res://assets/chars/naruto/ns-oodama-rasengan/sprites/
+            string trimLine = line.Trim();
+            if (trimLine.StartsWith("file"))
+            {
+                string type = trimLine.Split("col:");
+                if (type != null)
+                    return null;
+            }
+
+        }
+
+        throw new Exception("Type not found for Object Entity!");
+    }
+
 }

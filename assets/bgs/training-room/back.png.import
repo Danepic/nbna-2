@@ -2,26 +2,27 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4xg8tdfd5iw"
-path="res://.godot/imported/stage.png-6e932ccb8a7a8ef02dff53c6947599ae.ctex"
+uid="uid://b20wlwvh82m72"
+path.s3tc="res://.godot/imported/back.png-ff0d8c9a675daf36f0e7e626a18cb3d7.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
-source_file="res://bgs/training-room/stage.png"
-dest_files=["res://.godot/imported/stage.png-6e932ccb8a7a8ef02dff53c6947599ae.ctex"]
+source_file="res://assets/bgs/training-room/back.png"
+dest_files=["res://.godot/imported/back.png-ff0d8c9a675daf36f0e7e626a18cb3d7.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

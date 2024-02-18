@@ -2,28 +2,28 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj5owpdfnqiuh"
-path="res://.godot/imported/Naruto_Sprite.png-4a5ae67fc079a3fdab241baac55a9beb.ctex"
+uid="uid://do4dg5v48nym3"
+path="res://.godot/imported/Naruto_Sprite_1.png-68b3373a54312f47e8eaea7fc006a540.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite.png"
-dest_files=["res://.godot/imported/Naruto_Sprite.png-4a5ae67fc079a3fdab241baac55a9beb.ctex"]
+source_file="res://assets/chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite_1.png"
+dest_files=["res://.godot/imported/Naruto_Sprite_1.png-68b3373a54312f47e8eaea7fc006a540.ctex"]
 
 [params]
 
-compress/mode=3
-compress/high_quality=true
+compress/mode=0
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/normal_map=2
+compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=1
+roughness/mode=0
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false

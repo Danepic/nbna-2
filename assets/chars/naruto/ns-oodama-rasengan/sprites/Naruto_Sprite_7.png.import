@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ikh8088qh5ra"
-path="res://.godot/imported/Naruto_Sprite_6.png-61057484e2e39228c7211c858639c892.ctex"
+uid="uid://cdvmegmametut"
+path="res://.godot/imported/Naruto_Sprite_7.png-4e9a952262c2f4ef59e7714c78da284e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite_6.png"
-dest_files=["res://.godot/imported/Naruto_Sprite_6.png-61057484e2e39228c7211c858639c892.ctex"]
+source_file="res://assets/chars/naruto/ns-oodama-rasengan/sprites/Naruto_Sprite_7.png"
+dest_files=["res://.godot/imported/Naruto_Sprite_7.png-4e9a952262c2f4ef59e7714c78da284e.ctex"]
 
 [params]
 

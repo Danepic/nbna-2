@@ -15,4 +15,9 @@ public static class GetValueFromKeyInDataFile
         }
         return null;
     }
+
+    public static string ApplyV2(string line, string keyLine)
+    {
+        return line.Replace(keyLine + ":", "").Split(" ")[1];
+    }
 }

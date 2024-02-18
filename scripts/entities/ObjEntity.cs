@@ -11,7 +11,7 @@ public class ObjEntity
 
     public StatsEntity stats;
 
-    public Dictionary<int, SpriteAtlasEntity> sprites;
+    public Dictionary<int, Dictionary<int, SpriteAtlasEntity>> sprites;
 
     public Dictionary<int, FrameEntity> frames;
 

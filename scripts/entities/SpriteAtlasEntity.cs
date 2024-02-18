@@ -16,4 +16,6 @@ public class SpriteAtlasEntity
     public int quantityPerRowAndColumn;
 
     public int spriteSize;
+
+    public Rect2 center;
 }

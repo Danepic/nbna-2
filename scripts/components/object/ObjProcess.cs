@@ -19,8 +19,6 @@ public partial class ObjProcess : Node
 
 	[Export(PropertyHint.Dir)]
 	protected string spritePath;
-	protected Dictionary<int, Dictionary<int, Rect2>> spritePosition;
-
 	protected Sprite3D sprite3D;
 	protected Sprite3D shadowSprite3D;
 	protected Timer waitTimer;
@@ -37,23 +35,24 @@ public partial class ObjProcess : Node
 		using DirAccess spriteDir = DirAccess.Open(spritePath);
 		FileAccess dataFileAccess = Open(dataFile, ModeFlags.Read);
 
-		this.objEntity = new()
-		{
-			type = GetTypeFromDataFile.Apply(dataFileAccess),
-			sprites = GetSpritesForCacheUtil.Apply(spriteDir, spritePath),
-			header = GetHeaderFromDataFile.Apply(dataFileAccess),
-			stats = GetStatsFromDataFile.Apply(dataFileAccess)
-		};
+		// this.objEntity = new()
+		// {
+		// 	type = GetTypeFromDataFile.Apply(dataFileAccess),
+		// 	sprites = GetSpritesForCacheUtil.Apply(spriteDir, spritePath),
+		// 	header = GetHeaderFromDataFile.Apply(dataFileAccess),
+		// 	stats = GetStatsFromDataFile.Apply(dataFileAccess)
+		// };
+		this.objEntity = GetObjectEntityFromDataFile.Apply(dataFileAccess);
 
-		this.spritePosition = GetSpritesFromDataFile.Apply(dataFileAccess, ref this.objEntity.sprites);
+		// this.spritePosition = GetSpritesFromDataFile.Apply(dataFileAccess, ref this.objEntity.sprites);
 
-		foreach (KeyValuePair<int, Dictionary<int, Rect2>> entry in spritePosition)
-		{
-			foreach (KeyValuePair<int, Rect2> entry2 in entry.Value)
-			{
-				GD.Print("index: " + entry.Key + " - pos: " + entry2.Key + "/" + entry2.Value);
-			}
-		}
+		// foreach (KeyValuePair<int, Dictionary<int, Rect2>> entry in spritePosition)
+		// {
+		// 	foreach (KeyValuePair<int, Rect2> entry2 in entry.Value)
+		// 	{
+		// 		GD.Print("index: " + entry.Key + " - pos: " + entry2.Key + "/" + entry2.Value);
+		// 	}
+		// }
 
 		this.objEntity.frames = GetFramesFromDataFile.Apply(dataFileAccess);
 	}
@@ -91,12 +90,12 @@ public partial class ObjProcess : Node
 		waitTimer.WaitTime = this.currentFrame.wait / 30;
 		waitTimer.Start();
 
-		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
-		sprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
+		sprite3D.Texture = objEntity.sprites[currentFrame.textureIndex][currentFrame.pic].sprite;
+		sprite3D.RegionRect = objEntity.sprites[currentFrame.textureIndex][currentFrame.pic].center;
 
 		//GD.Print("currentFrame.textureIndex: " + currentFrame.textureIndex);
-		shadowSprite3D.Texture = objEntity.sprites[currentFrame.textureIndex].sprite;
-		shadowSprite3D.RegionRect = spritePosition[currentFrame.textureIndex][currentFrame.pic];
+		shadowSprite3D.Texture = objEntity.sprites[currentFrame.textureIndex][currentFrame.pic].sprite;
+		shadowSprite3D.RegionRect = objEntity.sprites[currentFrame.textureIndex][currentFrame.pic].center;
 
 		if (frameHelper.facingRight)
 		{

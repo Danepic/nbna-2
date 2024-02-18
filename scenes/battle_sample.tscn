@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://bck1dfkk7vy8u"]
 
 [ext_resource type="Script" path="res://scripts/components/Debug.cs" id="1_c82ke"]
-[ext_resource type="Texture2D" uid="uid://4xg8tdfd5iw" path="res://bgs/training-room/stage.png" id="1_cxcxb"]
+[ext_resource type="Texture2D" uid="uid://b20wlwvh82m72" path="res://assets/bgs/training-room/back.png" id="2_w6kge"]
 [ext_resource type="PackedScene" uid="uid://drkpgivdd48ew" path="res://scenes/player_sample.tscn" id="3_sgwrl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_wpex1"]
@@ -22,8 +22,8 @@ process_mode = 3
 script = ExtResource("1_c82ke")
 
 [node name="sprite" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00275373, 0, -0.236628)
-texture = ExtResource("1_cxcxb")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00275373, 0, 0.0876184)
+texture = ExtResource("2_w6kge")
 
 [node name="camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.927836, 0.372988, 0, -0.372988, 0.927836, -0.003, 2.112, 7.879)
